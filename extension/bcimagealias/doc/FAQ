@@ -1,0 +1,43 @@
+FAQ
+
+1) Custom image datatypes are supported through the bcimagealias.ini settings block BCImageAliasSettings setting array DataTypeStringList containing an array of dataTypeString (identifier)
+
+Example:
+
+[BCImageAliasSettings]
+DataTypeStringList[]
+DataTypeStringList[]=ezimage
+# Uncomment and customize the following line to support custom image datatypes
+# DataTypeStringList[]=ezimageextended
+
+
+2) Disk usage increases after generating image alias variation image files
+
+Disk usage of image alias variations within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build
+
+The 94 original image alias image variation image files stored within eZ Publish's var/ezwebin_site/storage/images folder of a default installation of the 2011.09 build is about 5 MB.
+
+After generating all possible 1316 image alias variation image files for the default siteaccess the same directory grows to over 18 MB.
+
+That reprents a 3.6 times larger amount of disk space consumed by the created image alias variations
+
+Here is a command line command that uses only base system tools to calculate current image alias variation image file disk useage
+
+Command: du -cm var/ezwebin_site/storage/images/|grep total
+
+Output: 5	total
+
+
+3) Performance
+
+The runtime performance of this extensions provided scripts and workflows depends greatly on the number of image datatypes used, the number of images in content objects, the number of image aliases in settings and the system load of the server durring the image alias variation image file generation.
+
+The ezpgenerateimagealiases.php script takes just under 55 seconds (timed) to generate all default image alias variation image files within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build.
+
+This means the estimated execution time to generate each image alias variation image file in the default installation is 0.041413374 per image alias image variation file.
+
+The ezpremoveimagealiases.php script takes just under 59.29 seconds (timed) to delete all image alias variation image files within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build.
+
+This means the estimated execution time to delete each image alias variation image file in the default installation is 0.045053191 per image alias image variation file.
+
+

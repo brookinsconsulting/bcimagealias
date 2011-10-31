@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<software>
+    <metadata>
+        <name>BC Image Alias</name>
+        <version>//autogentag//</version>
+        <copyright>Copyright (C) 1999 - 2011 Brookins Consulting</copyright>
+        <license>GNU General Public License</license>
+        <info_url>http://projects.ez.no/bcimagealias</info_url>
+    </metadata>
+
+    <dependencies>
+    </dependencies>
+
+</software>

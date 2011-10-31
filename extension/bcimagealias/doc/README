@@ -1,0 +1,137 @@
+BC ImageAlias extension README
+
+What is the BC ImageAlias extension?
+================================
+
+BC ImageAlias is a true eZ publish extension
+that provides commandline script, workflow event
+and class methods to generate content object
+image alias variations.
+
+
+BC ImageAlias version
+=======================
+
+The current version of BC ImageAlias is 0.0.20
+Last Major update: October 31, 2011
+
+You can find details about changes for this
+version in doc/changelogs/CHANGELOG-0.0.20
+
+
+License
+=======
+
+This software is licensed under the GNU General Public License.
+
+The complete license agreement is included in the doc/LICENSE file.
+
+For more information or questions please contact license@brookinsconsulting.com
+
+
+Requirements
+============
+
+The following requirements exists for using BC ImageAlias extension:
+
+o  eZ publish version:
+
+   Make sure you use eZ publish version 4.x or higher. eZ Publish 4.5+ is recommended.
+
+o  PHP version:
+
+   Make sure you have PHP 5.x or higher.
+
+
+Installation
+============
+
+Details on installing BC ImageAlias located in the file doc/INSTALL.
+
+
+Usage
+============
+
+The generation command line script option --generate
+
+This script will generate all possible image alias variation image files each time it is executed without the -dry optio
+
+Simply run the provided command line script to generate all image alias variations in the system.
+
+cd /path/to/ezpublish/;
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate
+
+
+Use --help option to review available command line options:
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --help
+
+
+Examples alternatives:
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --verbose
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --verbose --dry
+
+
+The removal command line script option --remove
+
+This script will remove all possible image alias variation image files each time it is executed without the -dry option.
+
+Simply run the provided command line script to remove all image alias variation image files in the system.
+
+cd /path/to/ezpublish/;
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove
+
+
+Use --help option to review available command line options:
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --help
+
+
+Examples alternatives:
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --verbose
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --verbose --dry
+
+
+The generation workflow event
+
+Install the optional provided workflow event 'generateobjectimagealiases' on the 'content, publish, before' trigger to enable content object image alias variations to be created each time a user publishes a content object.
+
+Detailed directions on installing and configuring the workflow event and trigger configuration available in the above section '6. (optional) Workflow & Trigger Setup' of this INSTALL documentation.
+
+
+The generate cronjob part
+
+This script will generaqte all possible image alias variation image files each time it is executed.
+
+Simply run the provided command line runcronjobs script to generate all image alias variation image files in the system.
+
+cd /path/to/ezpublish/;
+
+php ./runcronjobs.php bcimagealiasgenerate
+
+
+Troubleshooting
+===============
+
+1. Read the FAQ
+   ------------
+
+   Some problems are more common than others. The most common ones
+   are listed in the the FAQ.
+
+2. Support
+   -------
+
+   If you have find any problems not handled by this document or the FAQ you
+   can contact Brookins Consulting through the support system:
+   http://brookinsconsulting.com/contact
