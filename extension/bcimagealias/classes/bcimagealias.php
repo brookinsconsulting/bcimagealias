@@ -174,15 +174,31 @@ class BCImageAlias {
                                                       array( 'basename' => $basename ) ) )
                 {
                     $result = true;
+                    $aliasAlternativeText = $imageHandler->displayText( $original['alternative_text'] );
+                    $aliasOriginalFilename = $original['original_filename'];
                     foreach ( $aliasList as $aliasKey => $aliasListItem )
                     {
+                        $aliasListItem['original_filename'] = $aliasOriginalFilename;
+                        $aliasListItem['text'] = $aliasAlternativeText;
+
+                        if ( $aliasListItem['url'] )
+                        {
+                            $aliasListItemFile = eZClusterFileHandler::instance( $aliasListItem['url'] );
+                            if( $aliasListItemFile->exists() )
+                            {
+                                $aliasListItem['filesize'] = $aliasListItemFile->size();
+                            }
+                        }
                         if ( $aliasListItem['is_new'] )
                         {
                             eZImageFile::appendFilepath( $imageHandler->ContentObjectAttributeData['id'], $aliasListItem['url'] );
                         }
+                        
+                        $aliasList[ $aliasKey ] = $aliasListItem;
                     }
                     // $imageHandler->setAliasList( $aliasList );
-                    // $imageHandler->addImageAliases( $aliasList );
+                    $imageHandler->ContentObjectAttributeData['DataTypeCustom']['alias_list'] = $aliasList;
+                    $imageHandler->addImageAliases( $aliasList );
 
                     // Track successful generation attempts
                     if ( $result == true )
@@ -394,8 +410,8 @@ class BCImageAlias {
                         $file = eZClusterFileHandler::instance( $filepath );
 
                         if ( $file->exists() )
-                        {
-                            $file->delete();
+                        {               
+                            $file->purge();
                             eZImageFile::removeFilepath( $contentObjectAttributeID, $filepath );
                             eZDir::cleanupEmptyDirectories( $dirpath );
 
@@ -406,6 +422,16 @@ class BCImageAlias {
                         {
                             eZDebug::writeError( "Image file $filepath for alias $aliasName does not exist, could not remove from disk", __METHOD__ );
                         }
+                        
+                        $doc = $imageHandler->ContentObjectAttributeData['DataTypeCustom']['dom_tree'];
+                        foreach ( $doc->getElementsByTagName( 'alias' ) as $aliasNode )
+                        {
+                            $aliasNode->parentNode->removeChild( $aliasNode );
+                        }
+                        $imageHandler->ContentObjectAttributeData['DataTypeCustom']['dom_tree'] = $doc;
+                        unset( $imageHandler->ContentObjectAttributeData['DataTypeCustom']['alias_list'] );
+
+                        $imageHandler->storeDOMTree( $doc, true, $contentObjectAttribute );
                     }
                     else
                     {
