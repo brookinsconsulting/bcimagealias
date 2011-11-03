@@ -1,6 +1,6 @@
 FAQ
 
-1) Custom image datatypes are supported through the bcimagealias.ini settings block BCImageAliasSettings setting array DataTypeStringList containing an array of dataTypeString (identifier)
+1) Custom image datatypes are supported through the bcimagealias.ini settings block BCImageAliasSettings setting array DataTypeStringList containing an array of dataType string (identifiers)
 
 Example:
 
@@ -32,11 +32,11 @@ Output: 5	total
 
 The runtime performance of this extensions provided scripts and workflows depends greatly on the number of image datatypes used, the number of images in content objects, the number of image aliases in settings and the system load of the server durring the image alias variation image file generation.
 
-The ezpgenerateimagealiases.php script takes just under 55 seconds (timed) to generate all default image alias variation image files within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build.
+The bcimagealias.php --generate script takes just under 55 seconds (timed) to generate all default image alias variation image files within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build.
 
 This means the estimated execution time to generate each image alias variation image file in the default installation is 0.041413374 per image alias image variation file.
 
-The ezpremoveimagealiases.php script takes just under 59.29 seconds (timed) to delete all image alias variation image files within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build.
+The bcimagealias.php --remove script takes just under 59.29 seconds (timed) to delete all image alias variation image files within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build.
 
 This means the estimated execution time to delete each image alias variation image file in the default installation is 0.045053191 per image alias image variation file.
 
