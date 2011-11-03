@@ -1,0 +1,6 @@
+CHANGELOG 0.0.21
+
+- Added: Changelog for 0.0.21
+- Updated: Minor documentation refinements
+- Updated: Major bugfix, Image aliases data not properly removed or generated leaving alias list data in a dirty state. Patches allow for script to be run generation and removal again to correct state.
+
