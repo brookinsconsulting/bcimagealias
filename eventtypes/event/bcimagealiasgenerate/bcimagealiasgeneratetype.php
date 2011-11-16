@@ -1,6 +1,6 @@
 <?php
 /**
- * File containing the BCImageAliasGenerateObjectImageAliasVariationsType class.
+ * File containing the BCImageAliasGenerateType class.
  *
  * @copyright Copyright (C) 1999-2011 Brookins Consulting. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2 (or later)
@@ -8,11 +8,11 @@
  * @package extension/bcimagealias
  */
 
-class BCImageAliasGenerateObjectImageAliasVariationsType extends eZWorkflowEventType {
+class BCImageAliasGenerateType extends eZWorkflowEventType {
 
-    const WORKFLOW_TYPE_STRING = "bcimagealiasgenerateobjectimagealiasvariations";
+    const WORKFLOW_TYPE_STRING = "bcimagealiasgenerate";
 
-    function BCImageAliasGenerateObjectImageAliasVariationsType() {
+    function BCImageAliasGenerateType() {
         $this->eZWorkflowEventType( self::WORKFLOW_TYPE_STRING, "BC ImageAlias - Generate Object Image Alias Variation Image Files" );
         /* define trigger here */
         $this->setTriggerTypes( array( 'content' => array( 'publish' => array( 'before' ) ) ) );
@@ -30,11 +30,13 @@ class BCImageAliasGenerateObjectImageAliasVariationsType extends eZWorkflowEvent
         {
             eZDebugSetting::writeError( 'extension-bcimagealias-generate-image-alias-variations-workflow-on-non-object',
                                         $parameters['object_id'],
-                                        'BCImageAliasGenerateObjectImageAliasVariationsType::execute' );
+                                        'BCImageAliasGenerateType::execute' );
             return eZWorkflowEventType::STATUS_WORKFLOW_CANCELLED;
         }
 
-        $result = eZImageAlias::createByObject( $object );
+        $scriptExecutionOptions = array( 'verbose' => false, 'dry' => false );
+
+        $result = BCImageAlias::instance( $scriptExecutionOptions )->createByObject( $object );
  
         if( $result == true )
         {
@@ -45,6 +47,6 @@ class BCImageAliasGenerateObjectImageAliasVariationsType extends eZWorkflowEvent
     } 
 }
 
-eZWorkflowEventType::registerEventType( BCImageAliasGenerateObjectImageAliasVariationsType::WORKFLOW_TYPE_STRING, "BCImageAliasGenerateObjectImageAliasVariationsType" );
+eZWorkflowEventType::registerEventType( BCImageAliasGenerateType::WORKFLOW_TYPE_STRING, "BCImageAliasGenerateType" );
 
 ?>

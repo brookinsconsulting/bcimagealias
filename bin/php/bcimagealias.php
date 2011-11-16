@@ -191,7 +191,7 @@ else
 
 if( $generate && !$remove )
 {
-    // Alter the user to what has happened
+    // Alert the user to what has happened
     if( $dry )
     {
         $footerMessage = "\nPretended to generate " . $script->IterationIndex . " image alias variation image files. No image alias variation image files created!\n";
@@ -203,7 +203,7 @@ if( $generate && !$remove )
 }
 else
 {
-    // Alter the user to what has happened
+    // Alert the user to what has happened
     if( $script->IterationIndex == 0 && $dry == false )
     {
         $footerMessageSummary = ". No image alias variation image files deleted!\n";
