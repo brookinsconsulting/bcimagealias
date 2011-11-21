@@ -102,15 +102,29 @@ class BCImageAlias {
         {
             return false;
         }
-
+        $contentClassImageAttributes = self::fetchContentClassImageAttributes();
+        $contentClassImageAttributesArray = array();
+        foreach( $contentClassImageAttributes as $contentClassImageAttribute )
+        {
+            $contentClassImageAttributesArray[] = $contentClassImageAttribute->attribute( 'id' );
+        }
+        
         $contentObjectAttributes = $object->contentObjectAttributes();
         $results = array();
 
         // Iterate over object attributes
         foreach ( $contentObjectAttributes as $contentObjectAttribute )
         {
-            // Trigger the image alias variation generation
-            $results[] = self::createByAttribute( $contentObjectAttribute );
+            if ( in_array( $contentObjectAttribute->attribute('contentclassattribute_id') , 
+                           $contentClassImageAttributesArray ) )
+            {
+                // Trigger the image alias variation generation
+                $results[] = self::createByAttribute( $contentObjectAttribute );
+            }
+            else
+            {
+                $results[] = false;
+            }
         }
 
         if( in_array( true, $results ) && count( $contentObjectAttributes ) == count( $results ) )
@@ -145,21 +159,26 @@ class BCImageAlias {
 
         // Don't try to create original image alias
         unset( $aliases['original'] );
-
+        
+        // Fetch alias list from handler
+        $aliasList = $imageHandler->aliasList();
+        
+        // Fetch ezimagemanager instance
+        $imageManager = eZImageManager::factory();
+        
+        $result = false;
+        
+        $original = $aliasList['original'];
+        $basename = $original['basename'];
+        
         // Iterate through image alias list from settings
         foreach( $aliases as $alias )
         {
-            $imageManager = eZImageManager::factory();
-            $aliasList = $imageHandler->aliasList();
-            $result = false;
 
             if ( !$imageManager->hasAlias( $alias ) )
             {
                 return false;
             }
-
-            $original = $aliasList['original'];
-            $basename = $original['basename'];
 
             if( $executionOptions[ 'dry' ] == true )
             {
@@ -170,50 +189,68 @@ class BCImageAlias {
             }
             else
             {
+                // Actually create $alias
                 if ( $imageManager->createImageAlias( $alias, $aliasList,
                                                       array( 'basename' => $basename ) ) )
                 {
-                    $result = true;
-                    $aliasAlternativeText = $imageHandler->displayText( $original['alternative_text'] );
-                    $aliasOriginalFilename = $original['original_filename'];
-                    foreach ( $aliasList as $aliasKey => $aliasListItem )
-                    {
-                        $aliasListItem['original_filename'] = $aliasOriginalFilename;
-                        $aliasListItem['text'] = $aliasAlternativeText;
-
-                        if ( $aliasListItem['url'] )
-                        {
-                            $aliasListItemFile = eZClusterFileHandler::instance( $aliasListItem['url'] );
-                            if( $aliasListItemFile->exists() )
-                            {
-                                $aliasListItem['filesize'] = $aliasListItemFile->size();
-                            }
-                        }
-                        if ( $aliasListItem['is_new'] )
-                        {
-                            eZImageFile::appendFilepath( $imageHandler->ContentObjectAttributeData['id'], $aliasListItem['url'] );
-                        }
-                        
-                        $aliasList[ $aliasKey ] = $aliasListItem;
-                    }
-                    // $imageHandler->setAliasList( $aliasList );
-                    $imageHandler->ContentObjectAttributeData['DataTypeCustom']['alias_list'] = $aliasList;
-                    $imageHandler->addImageAliases( $aliasList );
-
-                    // Track successful generation attempts
-                    if ( $result == true )
-                    {
-                        $results[] = true;
-                        $message = "Generated datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $alias .
-                                   " image variation " . $aliasListItem['url'] . "\n";
-                        
-                        self::scriptIterate( $message );
-                    }
+                    $result[$alias] = true;
+                    // uncomment for debug // error_log( __CLASS__ . __METHOD__ . ": Created alias $alias" );
+                }
+                else
+                {
+                    $result[$alias] = false;
+                    // uncomment for debug // error_log( __CLASS__ . __METHOD__ . ": Fail creating alias $alias" );
                 }
             }
         }
+        
+        if (is_array($result))
+        {
+            $aliasAlternativeText = $imageHandler->displayText( $original['alternative_text'] );
+            $aliasOriginalFilename = $original['original_filename'];
+            foreach ( $aliasList as $aliasKey => $aliasListItem )
+            {
+                $aliasListItem['original_filename'] = $aliasOriginalFilename;
+                $aliasListItem['text'] = $aliasAlternativeText;
 
-        if( in_array( true, $results ) && count( $aliases ) == count( $results ) && $executionOptions[ 'dry' ] == false )
+                if ( $aliasListItem['url'] )
+                {
+                    $aliasListItemFile = eZClusterFileHandler::instance( $aliasListItem['url'] );
+                    if( $aliasListItemFile->exists() )
+                    {
+                        $aliasListItem['filesize'] = $aliasListItemFile->size();
+                    }
+                }
+                if ( $aliasListItem['is_new'] )
+                {
+                    eZImageFile::appendFilepath( $imageHandler->ContentObjectAttributeData['id'], $aliasListItem['url'] );
+                }
+                
+                $aliasList[ $aliasKey ] = $aliasListItem;
+                
+                // Track successful generation attempts
+                if ( isset($result[$aliasKey]) && $result[$aliasKey]==true )
+                {
+                    $results[] = true;
+                    $message = "Generated datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $aliasListItem['name'] .
+                               " image variation " . $aliasListItem['url'] . "\n";
+                    
+                    self::scriptIterate( $message );
+                }
+                elseif ( !isset($result[$aliasKey]) )
+                {
+                    $results[] = true;
+                }
+                else
+                {
+                    $results[] = false;
+                }
+            }
+            $imageHandler->ContentObjectAttributeData['DataTypeCustom']['alias_list'] = $aliasList;
+            $imageHandler->addImageAliases( $aliasList );
+        }
+
+        if( in_array( true, $results ) && count( $aliases ) == count( $result ) && $executionOptions[ 'dry' ] == false )
         {
             return true;
         }
@@ -457,18 +494,15 @@ class BCImageAlias {
      */
     static function scriptIterate( $message = '' )
     {
-        if( $message != '' )
+        if ( isset( $_SERVER['argv'] ) )
         {
-            $cli = eZCLI::instance();
-            $script = eZScript::instance();
-            $executionOptions = self::executionOptions();
-            if ( $executionOptions[ 'verbose' ] )
+            if( $message != '' )
             {
-                // Alter the user to what is happening at the moment
-                $cli->output( $message );
+                $cli = eZCLI::instance();
+                $script = eZScript::instance();
+                // Alert the user to what is happening at the moment
+                $script->iterate( $cli, true, $message );
             }
-            // Alert the user to what is happening at the moment
-            $script->iterate( $cli, true, $message );
         }
     }
 
