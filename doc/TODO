@@ -1,0 +1,26 @@
+BC Image Alias TODO
+=================================================
+
+There are still quite a lot of features we could
+add to BC Image Alias.
+
+A few users of BC Image Alias may require further
+extension of the default eZ Publish image alias
+image variation image file related features.
+
+If you are interested in sponsoring the development
+of any of these features for your eZ Publish web site,
+please contact info@brookinsconsulting.com
+
+
+Features for consideration:
+
+- Regenerating specific image alias's image variation image files alone
+- Regenerating image alias's image variation image files of only
+  a specific subtree of the content object tree node content tree
+- Remove image alias's image variation image files of non-published
+  versions to reduce disk usage.
+- Different debug options
+- Logging options
+- Any other changes not mentioned here 
+

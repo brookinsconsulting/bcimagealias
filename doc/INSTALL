@@ -36,7 +36,7 @@ Introduction
 
       Make sure you use eZ publish version 4.x or higher.
 
-      eZ Publish 2011.10 (4.5+) is recommended.
+      eZ Publish 2011.10 (4.6+) is recommended.
 
    o  PHP version:
 
@@ -51,10 +51,10 @@ you will find the various versions at:
 
 http://share.ez.no/download
 
-NOTE: You will require eZ Publish 4.x or higher
+NOTE: You will only require eZ Publish 4.x or higher (if you have a more recent version)
 
 Information on the installation of eZ publish can be found at:
-http://doc.ez.no/eZ-Publish/Technical-manual/4.5/Installation
+http://doc.ez.no/eZ-Publish/Technical-manual/4.6/Installation
 and
 http://doc.ez.no
 http://share.ez.no
@@ -69,9 +69,9 @@ Installing BC ImageAlias extension
 2. Unpack the files in the distribution. The command
    necessary is depends on the file you downloaded.
    [tar.gz]:
-   $ tar -zxvf bcimagealias-0_0_20.tar.gz
+   $ tar -zxvf bcimagealias-0_0_22.tar.gz
    [zip]:
-   $ unzip bcimagealias-0_0_20.tar.zip
+   $ unzip bcimagealias-0_0_22.tar.zip
 
 3. We must now enable the extension in eZ publish.
 
@@ -96,14 +96,26 @@ Installing BC ImageAlias extension
 4. There is no need to configure BC ImageAlias extension after activation
 
 
-5. Regenerate eZ Publish class autoloads
+5. Enable kernel overrides
+
+Remember to edit your config.php and enable this line:
+
+define( 'EZP_AUTOLOAD_ALLOW_KERNEL_OVERRIDE', true );
+
+
+6. Regenerate eZ Publish class autoloads
+
+You must regenerate autoloads for both extension and kernel overrides. This may mean running two different commands.
+
 
 cd /path/to/ezpublish;
 
 php bin/php/ezpgenerateautoloads.php -v -e;
 
+php bin/php/ezpgenerateautoloads.php -v -o;
 
-6. (optional) Workflow & Trigger Setup
+
+7. (optional) Workflow & Trigger Setup
    ===========================
    If you wish to have content object image alias variations created just before objects are published. Enable this workflow and clear caches.
 
@@ -132,7 +144,7 @@ php bin/php/ezpgenerateautoloads.php -v -e;
 
       In the table "Workflow Triggers" you will see a list of available triggers.
 
-      On the line: content, publish, before, (Workflow Drop Down)
+      On the line: content, publish, after, (Workflow Drop Down)
       "Click" the dropdown select the workflow event
       you have just created.
 
@@ -142,7 +154,7 @@ php bin/php/ezpgenerateautoloads.php -v -e;
       workflow settings should be activated, configured and functioning properly.
 
 
-7. (optional) Content Object Publish: Testing Workflow & Trigger Setup
+8. (optional) Content Object Publish: Testing Workflow & Trigger Setup
    ===========================
    After completing the above setup you should login to eZ publish
    create or edit a content object which uses the image datatype

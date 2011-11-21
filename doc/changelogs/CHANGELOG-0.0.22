@@ -1,0 +1,17 @@
+CHANGELOG 0.0.22
+
+- Added: Changelog for 0.0.22 in doc/changelogs/CHANGELOG-0.0.22
+- Rename: Rename workflow event PHP and workflow.ini settings to fix maximum workflow_type_string max_length of 50 characters. Re: "Debug: truncation of workflow_type_string to max_length=50"
+- Updated: Expanded phpdoc comments
+- Updated: Expanded workflow event comments
+- Updated: Expanded BCImageAlias method comments
+- Updated: Major refactoring in BCImageAlias class methods. Contributions from github.com/xserna
+-- Updated: BCImageAlias::scriptIterate method to prevent fatal error when triggered by workflow event
+-- Update BCImageAlias::createByObject method to skip non image attributes from object
+-- Update BCImageAlias::createByAttribute method to store each attribute only once, thus increasing performance
+-- Minor typo fix in some code comments
+- Updated: Minor copyright spacing change
+- Added: Added doc/COPYRIGHT
+- Added: Added doc/CREDITS
+- Added: Added doc/TODO
+

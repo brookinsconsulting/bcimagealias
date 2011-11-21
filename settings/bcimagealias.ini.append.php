@@ -13,4 +13,12 @@ ImageDataTypeStringList[]=ezimage
 # ImageDataTypeStringList[]=ezprofileimage
 # ImageDataTypeStringList[]=ezimageextended
 
+# Generate all image alias image variation image files for all image aliases not just variations which which do not yet exist.
+# WorkflowEventForceAliasImageVariationGeneration=enabled
+WorkflowEventForceAliasImageVariationGeneration=disabled
+
+# End WorkflowEvent execution fatally to allow developer to review execution troubleshooting output. Enables display of execution troubleshooting output.
+# WorkflowEventTroubleshootAliasImageVariationGeneration=enabled
+WorkflowEventTroubleshootAliasImageVariationGeneration=disabled
+
 */ ?>

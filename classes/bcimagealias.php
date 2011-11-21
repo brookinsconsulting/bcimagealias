@@ -2,32 +2,33 @@
 /**
  * File containing the BCImageAlias class.
  *
- * @copyright Copyright (C) 1999-2011 Brookins Consulting. All rights reserved.
+ * @copyright Copyright (C) 1999 - 2011 Brookins Consulting. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2 (or later)
  * @version //autogentag//
- * @package extension/bcimagealias
+ * @package bcimagealias
  */
 
 class BCImageAlias {
 
     /**
-     * Constructor of the BCImageAlias class
+     * Default constructor of the BCImageAlias class
      *
-     * @param array $options Used by the instance
+     * @param array $options Options used by the instance
      */
     function BCImageAlias( $options = false )
     {
         if( is_array( $options ) )
         {
-            self::$ExecutionOptions = $options;
+            self::$ExecutionOptions = array_merge( self::$ExecutionOptions , $options );
         }
     }
 
     /**
-     * Constructor of the BCImageAlias class
+     * Static constructor of the BCImageAlias class
      *
-     * @param array $options Used by the instance
-     * @return BCImageAlias
+     * @param array $options Options used by the instance
+     * @return object BCImageAlias
+     * @static
      */
     static function instance( $options = false )
     {
@@ -37,8 +38,9 @@ class BCImageAlias {
     /**
      * Fetch content class attributes by dataTypestring
      *
-     * @param $imageDataTypeStrings array of image datatype strings. ie: array( 'ezimage' )
-     * @return array of content class attributes, empty array if not
+     * @param array $imageDataTypeStrings array of image datatype strings. ie: array( 'ezimage' )
+     * @return array Array of content class attributes, empty array if not
+     * @static
      */
     static function fetchContentClassImageAttributes( $imageDataTypeStrings = false )
     {
@@ -64,10 +66,11 @@ class BCImageAlias {
     /**
      * Fetch content object 'image' attributes by content class attributes
      *
-     * @param $contentClassImageAttributes array of content class attributes
-     * @return array of content object attributes, empty array if not
+     * @param array $contentClassImageAttributes Array of content class attributes
+     * @return array Array of content object attributes, empty array if not
+     * @static
      */
-    static function fetchImageAttributesByClassAttributes( $contentClassImageAttributes = array() )
+    static function fetchImageAttributesByClassAttributes( $contentClassImageAttributes = array(), $firstVersion = true )
     {
         // Default datatypes to generate image alias variations
         $imageDataTypeStrings = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'ImageDataTypeStringList' );
@@ -93,8 +96,9 @@ class BCImageAlias {
     /**
      * Create if alias variation does not exist by content object
      *
-     * @param $object object of class ezcontentobject
-     * @return true if any image alias generation is called, false if not
+     * @param object $object Object of class ezcontentobject. Required
+     * @return bool true if any image alias generation is called, false if not
+     * @static
      */
     static function createByObject( $object = false )
     {
@@ -103,16 +107,44 @@ class BCImageAlias {
             return false;
         }
 
+        $executionOptions = self::executionOptions();
         $contentObjectAttributes = $object->contentObjectAttributes();
+        
+        $contentClassImageAttributes = self::fetchContentClassImageAttributes();
+        $contentClassImageAttributesArray = array();
+
+        foreach( $contentClassImageAttributes as $contentClassImageAttribute )
+        {
+            $contentClassImageAttributesArray[] = $contentClassImageAttribute->attribute( 'id' );
+        }
+
         $results = array();
 
         // Iterate over object attributes
         foreach ( $contentObjectAttributes as $contentObjectAttribute )
         {
-            // Trigger the image alias variation generation
-            $results[] = self::createByAttribute( $contentObjectAttribute );
+            // Test to ensure only attributes of class image are used
+            if ( in_array( $contentObjectAttribute->attribute('contentclassattribute_id') , 
+                           $contentClassImageAttributesArray ) )
+            {
+                // Trigger the image alias variation generation
+                $results[] = self::createByAttribute( $contentObjectAttribute );
+            }
+            else
+            {
+                $results[] = false;
+            }
+        }
+        
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true )
+        {
+            self::displayMessage( 'Here are the content object image attribute generation attempt results' );            
+            self::displayMessage( 'True will show up as a 1. Theses results do not affect workflow completion as image aliases will not always be generated' );
+            print_r( $results ); echo "\n";
         }
 
+        // Calculate return results based on execution options and results comparison
         if( in_array( true, $results ) && count( $contentObjectAttributes ) == count( $results ) )
         {
             return true;
@@ -122,10 +154,11 @@ class BCImageAlias {
     }
 
     /**
-     * Create image alias variation
+     * Create image alias variation by contentObjectAttribute
      *
-     * @param $contentObjectAttribute object of class eZContentObjectAtribute
-     * @return true if any image alias generation is called, false if not
+     * @param object $contentObjectAttribute object of class eZContentObjectAtribute
+     * @return bool true if any image alias generation is called, false if not
+     * @static
      */
     static function createByAttribute( $contentObjectAttribute = false )
     {
@@ -135,86 +168,257 @@ class BCImageAlias {
         }
 
         $results = array();
+        $result = array();
         $executionOptions = self::executionOptions();
 
         // Default image alias settings
         $aliases = eZINI::instance( 'image.ini' )->variable( 'AliasSettings', 'AliasList' );
 
-        // Fetch image alias handler
-        $imageHandler = $contentObjectAttribute->content();
-
         // Don't try to create original image alias
         unset( $aliases['original'] );
+
+        // Default datatypes to generate image alias variations
+        $imageDataTypeStrings = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'ImageDataTypeStringList' );
+
+        if( !in_array( $contentObjectAttribute->attribute( 'data_type_string' ), $imageDataTypeStrings ) || $contentObjectAttribute->attribute( 'has_content' ) == false )
+        {
+            return false;
+        }
+
+        // Fetch content object attribute content the image alias handler object
+        $imageHandler = $contentObjectAttribute->content();
+
+        // Fetch eZImageManager instance
+        $imageManager = eZImageManager::factory();
+
+        // Fetch the image alias handler object's alias list
+        $aliasList = $imageHandler->aliasList();
+
+        $original = $aliasList['original'];
+        $basename = $original['basename'];
+
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true )
+        {
+            self::displayMessage( 'Current content object image attribute image alias list entries within attribute handler content:' );
+            print_r( $imageHandler->ContentObjectAttributeData['DataTypeCustom']['alias_list'] ); echo "\n\n";
+            self::displayMessage( 'Number of ini image aliases: ' . count( $aliases ), "\n\n\n" );
+        }
+
+        // Initializse alias foreach counter at one, 1
+        $aliasCounter = 1;
 
         // Iterate through image alias list from settings
         foreach( $aliases as $alias )
         {
-            $imageManager = eZImageManager::factory();
-            $aliasList = $imageHandler->aliasList();
-            $result = false;
+            // Optional debug output
+            if( $executionOptions[ 'troubleshoot' ] == true )
+            {
+                self::displayMessage( 'Iteration ' . $aliasCounter . ' of ' . count( $aliases ) . ' | Preparing to attempt to generate the "' . $alias . '" image alias variation' );
+            }
+
+            // Store a temporary record of the alias not yet generated this iteration
+            $result[ $alias ] = false;
+
+            // Iterate alias foreach counter
+            $aliasCounter++;
 
             if ( !$imageManager->hasAlias( $alias ) )
             {
-                return false;
+                // Optional debug output
+                if( $executionOptions[ 'troubleshoot' ] == true )
+                {
+                    self::displayMessage( "eZImageManger claims: $alias does not exist in system" );
+                }
+                continue;
             }
 
-            $original = $aliasList['original'];
-            $basename = $original['basename'];
-
-            if( $executionOptions[ 'dry' ] == true )
+            // Skip generating aliases which already exist if force option is false
+            if( isset( $aliasList[ $alias ] )
+                && $executionOptions[ 'force' ] == false )
             {
-                $message = "Dry run: Calculating generation of datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $alias .
-                           " image variation " . $aliasList[ $alias ]['url'] . "\n";
+                continue;
+            }
 
-                self::scriptIterate( $message );
+            // Skip generation if force is not true and dry is true
+            if( $executionOptions[ 'force' ] == false && $executionOptions[ 'dry' ] == true )
+            {
+                // Optional debug output
+                if( $executionOptions[ 'troubleshoot' ] == true )
+                {
+                    // Alert user of dry alias calculation
+                    $message = "Dry run: Calculating generation of datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $alias .
+                               " image variation " . "\n";
+
+                    self::displayMessage( $message );
+                }
+
+                continue;
+            }
+
+            // Create $alias the image alias image variation image file on disk immediately 
+            if ( $imageManager->createImageAlias( $alias, $aliasList,
+                                                  array( 'basename' => $basename ) ) )
+            {
+                // Optional debug output
+                if( $executionOptions[ 'troubleshoot' ] == true )
+                {
+                    self::displayMessage( 'Specific alias added to aliasList (in attribute):' );
+                    print_r( $aliasList[ $alias ] ); echo "\n";
+                }
+
+                // Store a record of the alias generated this iteration
+                $result[ $alias ] = true;
+
+                // Uncomment the following line to write a error log entry (for debug)
+                // error_log( __CLASS__ . __METHOD__ . ": Created alias $alias" );
             }
             else
             {
-                if ( $imageManager->createImageAlias( $alias, $aliasList,
-                                                      array( 'basename' => $basename ) ) )
-                {
-                    $result = true;
-                    $aliasAlternativeText = $imageHandler->displayText( $original['alternative_text'] );
-                    $aliasOriginalFilename = $original['original_filename'];
-                    foreach ( $aliasList as $aliasKey => $aliasListItem )
-                    {
-                        $aliasListItem['original_filename'] = $aliasOriginalFilename;
-                        $aliasListItem['text'] = $aliasAlternativeText;
+                // Store a record of the alias not generated this iteration
+                $result[ $alias ] = false;
 
-                        if ( $aliasListItem['url'] )
-                        {
-                            $aliasListItemFile = eZClusterFileHandler::instance( $aliasListItem['url'] );
-                            if( $aliasListItemFile->exists() )
-                            {
-                                $aliasListItem['filesize'] = $aliasListItemFile->size();
-                            }
-                        }
-                        if ( $aliasListItem['is_new'] )
-                        {
-                            eZImageFile::appendFilepath( $imageHandler->ContentObjectAttributeData['id'], $aliasListItem['url'] );
-                        }
-                        
-                        $aliasList[ $aliasKey ] = $aliasListItem;
-                    }
-                    // $imageHandler->setAliasList( $aliasList );
-                    $imageHandler->ContentObjectAttributeData['DataTypeCustom']['alias_list'] = $aliasList;
-                    $imageHandler->addImageAliases( $aliasList );
+                // Uncomment the following line to write a error log entry (for debug)
+                // error_log( __CLASS__ . __METHOD__ . ": Fail creating alias $alias" );
+            }
 
-                    // Track successful generation attempts
-                    if ( $result == true )
-                    {
-                        $results[] = true;
-                        $message = "Generated datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $alias .
-                                   " image variation " . $aliasListItem['url'] . "\n";
-                        
-                        self::scriptIterate( $message );
-                    }
-                }
+            // Optional debug output
+            if( $executionOptions[ 'troubleshoot' ] == true )
+            {
+                self::displayMessage( 'Leaving create image alias if block' );
+                self::displayMessage( 'Looping to next image alias from ini settings', "\n\n\n" );
             }
         }
 
-        if( in_array( true, $results ) && count( $aliases ) == count( $results ) && $executionOptions[ 'dry' ] == false )
+        $aliasesGenerated = array_keys( $result, true );
+        $aliasesGeneratedCount = count( $aliasesGenerated );
+
+        // Only prepare alias meta data when alias(s) have been created
+        if ( is_array( $result ) && in_array( true, array_keys( $result, true ) ) )
         {
+            $aliasAlertnativeText = $imageHandler->displayText( $original['alertnative_text'] );
+            $aliasOriginalFilename = $original['original_filename'];
+
+            foreach ( $aliasList as $aliasKey => $aliasListItem )
+            {
+            
+                // Test for newly added alias
+                // if ( ( !isset( $aliasListItem['is_new'] ) or $aliasListItem['is_new'] == '' ) && $executionOptions[ 'force' ] == true )
+                if ( $executionOptions[ 'force' ] == true )
+                {
+                    $aliasListItem['is_new'] = true;
+                    $aliasListItem['is_valid'] = true;
+                }
+
+                // Prepare meta data
+                $aliasListItem['original_filename'] = $aliasOriginalFilename;
+                $aliasListItem['text'] = $aliasAlertnativeText;
+
+                // Test for alias file url and add meta data
+                if ( $aliasListItem['url'] )
+                {
+                    $aliasListItemFile = eZClusterFileHandler::instance( $aliasListItem['url'] );
+                    if( $aliasListItemFile->exists() )
+                    {
+                        $aliasListItem['filesize'] = $aliasListItemFile->size();
+                    }
+                }
+
+                // Test for newly added alias
+                if ( $aliasListItem['is_new'] )
+                {
+                    eZImageFile::appendFilepath( $imageHandler->ContentObjectAttributeData['id'], $aliasListItem['url'] );
+                }
+
+                // Add alias image variation image file meta data back into aliasList
+                $aliasList[ $aliasKey ] = $aliasListItem;
+
+                // Track successful generation attempts
+                if ( isset( $result[ $aliasKey ] ) && $result[ $aliasKey ] == true )
+                {
+                    $results[] = true;
+                    $message = "Generated datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $aliasListItem['name'] .
+                               " image variation " . $aliasListItem['url'] . "\n";
+
+                    self::scriptIterate( $message );
+                }
+                elseif ( !isset( $result[ $aliasKey ] ) )
+                {
+                    $results[] = true;
+                }
+                else
+                {
+                    $results[] = false;
+                }
+            }
+
+            /**
+             * Note: The following code replaces the use of this example private method unavailable at the time of publishing
+             *
+             * $imageHandler->setAliasList( $aliasList );
+             */
+            $imageHandler->ContentObjectAttributeData['DataTypeCustom']['alias_list'] = $aliasList;
+            $imageHandler->addImageAliases( $aliasList );
+            // $imageHandler->store( $contentObjectAttribute );
+
+            // Optional debug output
+            if( $executionOptions[ 'troubleshoot' ] == true )
+            {
+                print_r( $aliasList ); echo "\n\n";
+                print_r( $imageHandler ); echo "\n\n";
+            }
+        }
+
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true )
+        {
+            self::displayMessage( "\n" . 'Content object attribute image alias image variation generation attempts completed' );
+
+            $coaID = $contentObjectAttribute->attribute( 'id' );
+            $coaVersion = $contentObjectAttribute->attribute( 'version' );
+            $contentObjectAttributeRefetched = eZContentObjectAttribute::fetch( $coaID, $coaVersion );
+
+            self::displayMessage( 'Displaying saved re-feched data_text of attribute image handler. You should see this list fully populated with all generated image alias file urls' );
+            // print_r( $contentObjectAttributeRefetched ); //>attribute( 'content' )->aliasList()
+            print_r( $contentObjectAttributeRefetched->attribute( 'content' )->aliasList() );
+            // print_r( $contentObjectAttributeRefetched->attribute( 'content' )->ContentObjectAttributeData['data_text'] ); echo "\n\n";
+
+
+            $objectLookup = eZContentObject::fetch( $contentObjectAttribute->attribute( 'contentobject_id' ) );
+            $objectLookupDM = $objectLookup->dataMap();
+            
+            print_r( $objectLookupDM[ 'image' ]->content()->aliasList( true ) ); echo "\n\n";
+
+            self::displayMessage( 'Here are the content object image attribute image alias generation attempt results' );
+            self::displayMessage( 'Generated aliases will show up as a 1. Theses results do not affect workflow completion as image aliases will not always be generated' );
+            print_r( $result ); echo "\n";
+        }
+
+        // Calculate return results based on execution options and results comparison
+        if( in_array( true, $results ) && count( $aliases ) == count( $result )
+            && $executionOptions[ 'dry' ] == false
+            && $executionOptions[ 'force' ] == true )
+        {
+            // Optional debug output
+            if( $executionOptions[ 'troubleshoot' ] == true )
+            {
+                self::displayMessage( 'Generation attempts calculate as successfull, at least once. All aliases possible attempted' );
+                self::displayMessage( 'Variation images generated: ' . $aliasesGeneratedCount . ' out of ' . count( $result ), "\n\n\n" );
+            }
+
+            return true;
+        }
+        elseif( in_array( true, $results )
+                && $executionOptions[ 'dry' ] == false
+                && $executionOptions[ 'force' ] == false )
+        {
+            // Optional debug output
+            if( $executionOptions[ 'troubleshoot' ] == true )
+            {
+                self::displayMessage( 'Generation attempts calculate as successfull, at least once. All aliases possible attempted' );
+                self::displayMessage( 'Variations images generated: ' . $aliasesGeneratedCount . ' out of ' . count( $result ), "\n\n\n" );
+            }
+
             return true;
         }
 
@@ -224,8 +428,9 @@ class BCImageAlias {
     /**
      * Attempt to generate content object 'image' attribute image variations by content object attribute
      *
-     * @param $contentClassImageAttribute object of class eZContentObjectAttribute
-     * @return true if any image alias generation is called, false if not
+     * @param object $contentClassImageAttribute object of class eZContentObjectAttribute
+     * @return bool true if any image alias generation is called, false if not
+     * @static
      */
     static function createByAttributes( $contentObjectAttributes = false )
     {
@@ -237,11 +442,32 @@ class BCImageAlias {
         $results = array();
         $executionOptions = self::executionOptions();
 
-        foreach( $contentObjectAttributes as $contentObjectAttribute )
+        $contentClassImageAttributes = self::fetchContentClassImageAttributes();
+        $contentClassImageAttributesArray = array();
+
+        // Iterate over content class image attributes
+        foreach( $contentClassImageAttributes as $contentClassImageAttribute )
         {
-            $results[] = self::createByAttribute( $contentObjectAttribute );
+            $contentClassImageAttributesArray[] = $contentClassImageAttribute->attribute( 'id' );
         }
 
+        // Iterate over object attributes
+        foreach( $contentObjectAttributes as $contentObjectAttribute )
+        {
+            if ( in_array( $contentObjectAttribute->attribute('contentclassattribute_id') , 
+                           $contentClassImageAttributesArray ) )
+            {
+                // Trigger the image alias variation generation
+                $results[] = self::createByAttribute( $contentObjectAttribute );
+            }
+            else
+            {
+                // Record the failure to create by attribute because the attribute was of the wrong content class
+                $results[] = false;
+            }
+        }
+
+        // Calculate return results based on execution options and results comparison
         if( in_array( true, $results ) && count( $contentObjectAttributes ) == count( $results )  && $executionOptions[ 'dry' ] == false )
         {
             return true;
@@ -252,8 +478,9 @@ class BCImageAlias {
     /**
      * Attempt to remove content object 'image' attribute image variations by content object attributes
      *
-     * @param $contentClassImageAttributes array of objects of class eZContentObjectAttribute
+     * @param array $contentClassImageAttributes Array of objects of class eZContentObjectAttribute
      * @return bool true if succcesfull, false otherwise
+     * @static
      */    
     static function removeAllAliases( $contentObjectAttributes = false )
     {
@@ -264,14 +491,37 @@ class BCImageAlias {
         
         $filePaths = array();
         $results = array();
+        $uniqueContentObjectAttributes = array();
         $executionOptions = self::executionOptions();
         $messageCount = 0;
 
         foreach( $contentObjectAttributes as $contentObjectAttribute )
         {
+            $contentObjectID = $contentObjectAttribute->attribute( 'contentobject_id' );
+            $contentObjectAttributeID = $contentObjectAttribute->attribute( 'id' );
+            $contentObjectAttributeVersion = $contentObjectAttribute->attribute( 'version' );
+
+
+            // Optional debug output
+            if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'troubleshootLevel' ] == 1 )
+            {
+                self::displayMessage( 'Content object attribute', "\n" );
+                print_r( $uniqueContentObjectAttributes ); echo "\n\n";
+
+                self::displayMessage( 'Iterating over image attribute of object:' );
+
+                $object = eZContentObject::fetch( $contentObjectAttribute->attribute( 'contentobject_id' ) );
+
+                self::displayMessage( $object->attribute( 'name' ), "\n" );
+                self::displayMessage( 'ContentObjectID: ' . $contentObjectAttribute->attribute( 'contentobject_id' ) );
+
+                print_r( $contentObjectAttribute->content()->aliasList( true ) ); echo "\n\n";
+            }
+
             $results[] = self::removeAllAliasesByAttribute( $contentObjectAttribute );
         }
 
+        // Calculate return results based on execution options and results comparison
         if( in_array( true, $results ) && count( $contentObjectAttributes ) == count( $results ) && $executionOptions[ 'dry' ] == false )
         {
             return true;
@@ -282,8 +532,9 @@ class BCImageAlias {
     /**
      * Attempt to remove content object 'image' attribute image variations by content object attribute
      *
-     * @param $contentClassImageAttribute object of objects of class eZContentObjectAttribute
+     * @param object $contentClassImageAttribute object of objects of class eZContentObjectAttribute
      * @return bool true if succcesfull, false otherwise
+     * @static
      */
     static function removeAllAliasesByAttribute( $contentObjectAttribute = false )
     {
@@ -291,7 +542,7 @@ class BCImageAlias {
         {
             return false;
         }
-        
+
         $filePaths = array();
         $results = array();
         $executionOptions = self::executionOptions();
@@ -299,9 +550,23 @@ class BCImageAlias {
 
         $imageHandler = $contentObjectAttribute->attribute( 'content' );
         $aliasList = $imageHandler->aliasList();
+        $aliasListWithoutOriginal = $imageHandler->aliasList();
+
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'troubleshootLevel' ] == 2 )
+        {
+            self:displayMessage( 'All attribute image aliases stored in content:' );
+            print_r( $imageHandler->aliasList() ); echo "\n\n";
+        }
 
         // Do not process the orginal image alias
+        unset( $aliasListWithoutOriginal['original'] );
         unset( $aliasList['original'] );
+
+        if( count( $aliasList ) == 0 )
+        {
+            return false;
+        }
 
         $attributeData = $imageHandler->originalAttributeData(); 
         $contentObjectAttributeID = $attributeData['attribute_id'];
@@ -362,47 +627,14 @@ class BCImageAlias {
                 {
                     $filepath = $alias['url'];
 
-                    // Fetch ezimage attributes that use $filepath
-                    // Always returns current attribute (array of $contentObjectAttributeID and $contentObjectAttributeVersion)
-                    $dbResult = eZImageFile::fetchImageAttributesByFilepath( $filepath, $contentObjectAttributeID );
-                    $dbResultCount = count( $dbResult );
-                    // Check if there are the attributes.
-                    if ( $dbResultCount > 0 )
-                    {
-                        $doNotDelete = true;
-                        foreach ( $dbResult as $res )
-                        {
-                            // We only look results where the version matches
-                            if ( $res['version'] == $contentObjectAttributeVersion )
-                            {
-                                // If more than one result has been returned, it means
-                                // that another version is using the same image,
-                                // and we should not delete this file
-                                if ( $dbResultCount > 1 )
-                                {
-                                    continue;
-                                }
-                                // Only one result means that the current attribute
-                                // & version are the only ones using this image,
-                                // and it can be removed
-                                else
-                                {
-                                    $doNotDelete = false;
-                                }
-                            }
-
-                            eZImageFile::appendFilepath( $res['id'], $filepath, true );
-                        }
-                    }
-
-                    // Calculate appropriate message to alter user with
+                    // Calculate appropriate message to Alert user with
                     if( $executionOptions[ 'dry' ] == true )
                     {
                         $message = "Dry run: Calculating removal of datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias variation " . $filepath . "\n";
                     }
                     else
                     {
-                        $message = "Removed datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias variation " . $filepath . "\n";
+                        $message = "Removed standard datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias variation " . $filepath . "\n";
                     }
 
                     if ( !$doNotDelete && $executionOptions[ 'dry' ] == false )
@@ -442,6 +674,7 @@ class BCImageAlias {
             }
         }
 
+        // Calculate return results based on execution options and results comparison
         if( in_array( true, $results ) && count( $aliasList ) == count( $results ) && $executionOptions[ 'dry' ] == false )
         {
             return true;
@@ -452,23 +685,59 @@ class BCImageAlias {
     /**
      * Trigger cli script iteration and verbose iteration message display
      *
-     * @param $message string of message text to use to alert user of iteration message
+     * @param string $message string of message text to use to alert user of iteration message
      * @return void
+     * @static
      */
     static function scriptIterate( $message = '' )
     {
-        if( $message != '' )
+        $executionOptions = self::executionOptions();
+        if( isset( $_SERVER['argv'] ) && $executionOptions[ 'iterate' ] )
         {
-            $cli = eZCLI::instance();
-            $script = eZScript::instance();
-            $executionOptions = self::executionOptions();
-            if ( $executionOptions[ 'verbose' ] )
+            if( $message != '' )
             {
-                // Alter the user to what is happening at the moment
-                $cli->output( $message );
+                $cli = eZCLI::instance();
+                $script = eZScript::instance();
+
+                // Alter the user to what is happening
+                self::displayMessage( $message );
+
+                // Iterate script, Alert the user to what is happening at the moment
+                $script->iterate( $cli, true, $message );
             }
-            // Alert the user to what is happening at the moment
-            $script->iterate( $cli, true, $message );
+        }
+    }
+
+    /**
+     * Trigger display of cli script message to user and verbose iteration message display
+     *
+     * @param string $message String of message text to use to alert user of iteration message. Required
+     * @param string $newline String of the newlines to use after displaying a message. Optional
+     * @return void
+     * @static
+     */
+    static function displayMessage( $message = '', $newline = "\n\n" )
+    {
+
+        $executionOptions = self::executionOptions();
+        if( isset( $_SERVER['argv'] ) )
+        {
+            if( $message != '' )
+            {
+                $cli = eZCLI::instance();
+                $script = eZScript::instance();
+                if ( $executionOptions[ 'verbose' ] )
+                {
+                    // Alert the user to what is happening at the moment
+                    $cli->output( $message );
+                }
+            }
+        }
+        // Optional debug output
+        elseif( $executionOptions[ 'troubleshoot' ] == true && $message != '' )
+        {
+            print_r( $message );
+            echo $newline;
         }
     }
 
@@ -476,14 +745,26 @@ class BCImageAlias {
      * Return current BCImageAlias static object property executionOptions an array of execution options
      *
      * @return array
+     * @static
      */
     static function executionOptions()
     {
         return self::$ExecutionOptions;
     }
 
-    /// \privatesection
-    static public $ExecutionOptions = array( 'verbose' => false, 'dry' => true );
+    /**
+     * Array of default execution options
+     *
+     * Verbose = true, Enabled by default
+     * Dry = true, Enabled by default. Does not write any files to disk
+     * Iterate = false, Disabled by default. Does not attempt to run as eZ cli script (Workflow event execution)
+     * Force = false, Disabled by default. Does not attempt to force generation of all image alias image variation image files unless they need to be created (not created yet)
+     *
+     * @static
+     * @access public
+     */
+    static public $ExecutionOptions = array( 'verbose' => false, 'dry' => true, 'iterate' => false, 'force' => false );
+
 }
 
 ?>

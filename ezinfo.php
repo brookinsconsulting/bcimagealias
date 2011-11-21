@@ -13,7 +13,7 @@ class bcimagealiasInfo
     {
         return array(
             'Name' => "<a href='http://projects.ez.no/bcimagealias'>BC Image Alias</a>",
-            'Version' => "0.0.20",
+            'Version' => "0.0.22",
             'Copyright' => "Copyright (C) 1999 - 2011 <a href='http://brookinsconsulting.com/'>Brookins Consulting</a>",
             'Author' => "Brookins Consulting",
             'License' => "GNU General Public License"

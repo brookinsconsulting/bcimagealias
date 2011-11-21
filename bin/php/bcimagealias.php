@@ -3,10 +3,10 @@
 /**
  * File containing the image alias image variation image file generator / remover
  *
- * @copyright Copyright (C) 1999-2011 Brookins Consulting. All rights reserved.
+ * @copyright Copyright (C) 1999 - 2011 Brookins Consulting. All rights reserved.
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU GPL v2 (or later)
  * @version //autogentag//
- * @package extension/bcimagealias
+ * @package bcimagealias
  */
 
 // Add a starting timing point tracking script execution time
@@ -51,8 +51,7 @@ if( $generate == false && $remove == false )
     $cli->warning( "You can run this script with --dry switch to just view which files are going to be generated or removed." );
     $cli->output();
     // Shutdown the script and exit eZ
-    $script->shutdown();
-    exit( 0 );
+    $script->shutdown( 1 );
 }
 
 // Alert user to current siteaccess used for process
@@ -67,9 +66,9 @@ if ( $siteAccess || ( $verbose && $siteAccess != '' ) || ( $dry && $siteAccess!=
         $cli->notice( "Siteaccess $siteAccess does not exist, using default siteaccess" );
     }
 }
- 
+
 // General script options
-$scriptExecutionOptions = array( 'verbose' => $verbose, 'dry' => $dry );
+$scriptExecutionOptions = array( 'verbose' => $verbose, 'dry' => $dry, 'iterate' => true, 'force', $force, 'troubleshoot' => true, 'troubleshootLevel' => 1 );
 $script->initialize();
 $script->setIterationData( '.', '~' );
 $isQuiet = $script->isQuiet();
@@ -91,8 +90,7 @@ if( !is_array( $imageDataTypeStrings ) )
     $cli->warning( "You must first clear all ini caches to use this extension script" );
     $cli->output();
     // Shutdown the script and exit eZ
-    $script->shutdown();
-    exit( 0 );
+    $script->shutdown( 1 );
 }
 
 // Fetch content class image attributes
@@ -146,7 +144,7 @@ if ( !$force )
         }
     }
     $cli->warning( "You have 10 seconds to stop the script execution before it starts (press Ctrl-C)." );
-    
+
     sleep( 10 );
     $cli->output();
 }
@@ -191,7 +189,7 @@ else
 
 if( $generate && !$remove )
 {
-    // Alter the user to what has happened
+    // Alert the user to what has happened
     if( $dry )
     {
         $footerMessage = "\nPretended to generate " . $script->IterationIndex . " image alias variation image files. No image alias variation image files created!\n";
@@ -203,7 +201,7 @@ if( $generate && !$remove )
 }
 else
 {
-    // Alter the user to what has happened
+    // Alert the user to what has happened
     if( $script->IterationIndex == 0 && $dry == false )
     {
         $footerMessageSummary = ". No image alias variation image files deleted!\n";
@@ -229,7 +227,7 @@ $startTime = next( explode( " ", $srcStartTime ) ) + current( explode( " ", $src
 $stopTime = next( explode( " ", $srcStopTime ) ) + current( explode( " ", $srcStopTime ) );
 $executionTime = round( $stopTime - $startTime, 2 );
 
-// Alter the user to how long the script execution took place
+// Alert the user to how long the script execution took place
 $cli->output( "This script execution completed in " . $executionTime . " seconds" . ".\n" );
 
 // Shutdown the script and exit eZ

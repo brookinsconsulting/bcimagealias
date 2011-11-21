@@ -3,10 +3,10 @@
 /**
  * File containing the image alias image variation generator
  *
- * @copyright Copyright (C) 1999-2011 Brookins Consulting. All rights reserved.
+ * @copyright Copyright (C) 1999 - 2011 Brookins Consulting. All rights reserved.
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU GPL v2 (or later)
  * @version //autogentag//
- * @package extension/bcimagealias
+ * @package bcimagealias
  */
 
 // Add a starting timing point tracking script execution time
