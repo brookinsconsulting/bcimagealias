@@ -41,3 +41,23 @@ The bcimagealias.php --remove script takes just under 59.29 seconds (timed) to d
 This means the estimated execution time to delete each image alias variation image file in the default installation is 0.045053191 per image alias image variation file.
 
 
+4) Generating and removing image aliases also clears object content cache using eZContentCacheManager::clearContentCacheIfNeeded( $contentObjectID );
+
+
+5) Kernel Override Requirements
+
+   eZ Publish 4.x >= 4.0 - Requires both kernel overrides
+   -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.09+ ) - Requires both kernel overrides
+   -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.10+ ) - Requires only one kernel override
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ) - Requires only one kernel override
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+

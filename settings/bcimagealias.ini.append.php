@@ -21,4 +21,8 @@ WorkflowEventForceAliasImageVariationGeneration=disabled
 # WorkflowEventTroubleshootAliasImageVariationGeneration=enabled
 WorkflowEventTroubleshootAliasImageVariationGeneration=disabled
 
+# Generate all image alias image variations for current siteaccess (if set to 'enabled')
+# Generate all image alias image variations for all related siteaccesses (if set to 'disabled')
+WorkflowEventCurrentSiteAccessAliasImageVariationGeneration=disabled
+
 */ ?>

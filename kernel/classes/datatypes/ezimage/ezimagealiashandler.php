@@ -444,7 +444,7 @@ class eZImageAliasHandler
 
      \param aliasList alias list
     */
-    public function setAliasList( $aliasList )
+    protected function setAliasList( $aliasList )
     {
         $this->ContentObjectAttributeData['DataTypeCustom']['alias_list'] = $aliasList;
     }
@@ -455,7 +455,7 @@ class eZImageAliasHandler
      \param alias name
      \param variation array
     */
-    public function setAliasVariation( $aliasName, $variation )
+    protected function setAliasVariation( $aliasName, $variation )
     {
         $this->ContentObjectAttributeData['DataTypeCustom']['alias_list'][$aliasName] = $variation;
     }
@@ -467,7 +467,7 @@ class eZImageAliasHandler
      \param attributeName attribute name
      \param value attribute value
     */
-    public function setAliasAttribute( $aliasName, $attributeName, $value )
+    protected function setAliasAttribute( $aliasName, $attributeName, $value )
     {
         $this->ContentObjectAttributeData['DataTypeCustom']['alias_list'][$aliasName][$attributeName] = $value;
     }

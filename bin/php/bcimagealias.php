@@ -32,18 +32,26 @@ $script = eZScript::instance( array( 'description' =>
                                      'use-extensions' => true ) );
 
 // Fetch default script options
-$options = $script->getOptions( '[generate;][remove;][force;][dry;]',
-                                '[name]', array( 'force' => 'Force generation or removal. Disable delayed startup', 'dry' => 'Display calculated execution. Make no system changes',
-                                                 'generate' => 'Generate content object attribute image datatype image alias image variation image files',
-                                                 'remove' => 'Remove existing content object attribute image datatype image alias image variation image files from system'  ) );
+$options = $script->getOptions( '[force;][dry;][script-verbose;][generate;][remove;][troubleshoot-level;][related-siteaccesses;]',
+                                '[name]', array( 'force' => 'Force generation or removal. Disable delayed startup. Optional. Defaults to false',
+                                                 'dry' => 'Use only with --' . "'remove'" . ' parameter to make no system changes. Simulate the removal of content object attribute image datatype image alias image variation image files from system. Example: ' . "'--dry'" . ' is an optional parameter which defaults to false',
+                                                 'script-verbose' => 'Use this parameter to display verbose script output without disabling script iteration counting of images generated or removed. Example: ' . "'--script-verbose'" . ' is an optional parameter which defaults to false',
+                                                 'generate' => 'Generate content object attribute image datatype image alias image variation image files. Either ' . "'--generate' or '--remove'" . ' are required parameters',
+                                                 'remove' => 'Remove existing content object attribute image datatype image alias image variation image files from system. Either ' . "'--generate' or '--remove'" . ' are required parameters',
+                                                 'troubleshoot-level' => 'Use only with --' . "'script-verbose'" . ' parameter to see more of execution internals. Example: --' . "'troubleshoot-level'" . '=2 is an optional parameter which defaults to 1',
+                                                 'related-siteaccesses' => 'Use only with --' . "'generate'" . ' parameter to fetch image alias settings definitions from all related siteaccess to current siteaccess. Example: --' . "'related-siteaccesses'" . '=true is an optional parameter which defaults to false'
+                                               ) );
 
 // Script parameters
 $siteAccess = $options['siteaccess'] ? $options['siteaccess'] : false;
-$verbose = isset( $options['verbose'] ) ? true : false;
+$troubleshootLevel = isset( $options['troubleshoot-level'] ) ? $options['troubleshoot-level'] : 1;
+$troubleshoot = isset( $options['troubleshoot-level'] ) ? true : true;
+$verbose = isset( $options['script-verbose'] ) ? true : false;
 $force = isset( $options['force'] ) ? true : false;
 $dry = isset( $options['dry'] ) ? true : false;
 $generate = isset( $options['generate'] ) ? true : false;
 $remove = isset( $options['remove'] ) ? true : false;
+$currentSiteaccess = isset( $options['related-siteaccesses'] ) ? false : true;
 
 if( $generate == false && $remove == false )
 {
@@ -68,7 +76,9 @@ if ( $siteAccess || ( $verbose && $siteAccess != '' ) || ( $dry && $siteAccess!=
 }
 
 // General script options
-$scriptExecutionOptions = array( 'verbose' => $verbose, 'dry' => $dry, 'iterate' => true, 'force', $force, 'troubleshoot' => true, 'troubleshootLevel' => 1 );
+$scriptExecutionOptions = array( 'verbose' => $verbose, 'dry' => $dry, 'iterate' => true,
+                                 'force' => $force, 'troubleshoot' => $troubleshoot, 'troubleshootLevel' => $troubleshootLevel,
+                                 'current-siteaccess' => $currentSiteaccess );
 $script->initialize();
 $script->setIterationData( '.', '~' );
 $isQuiet = $script->isQuiet();
@@ -78,9 +88,61 @@ $script->startup();
 $contentClassImageAttributesCount = 0;
 $contentObjectImageAttributes = array();
 $contentObjectImageAttributesCount = 0;
+$aliases = array();
 
-// Default image alias settings
-$aliases = eZINI::instance( 'image.ini' )->variable( 'AliasSettings', 'AliasList' );
+// Switch based on siteaccess usage
+if( $currentSiteaccess == true )
+{
+    // Default image alias settings
+    $aliases = eZINI::instance( 'image.ini' )->variable( 'AliasSettings', 'AliasList' );
+}
+else
+{
+    // Load default related siteaccess image alias settings
+    $relatedSiteAccesses = eZINI::instance( 'site.ini' )->variable( 'SiteAccessSettings', 'RelatedSiteAccessList' );
+    if( is_array( $relatedSiteAccesses ) )
+    {
+        foreach( $relatedSiteAccesses as $relatedSiteAccess )
+        {
+            // Optional debug output
+            if( $troubleshoot == true && $troubleshootLevel >= 3 )
+            {
+                $cli->output( 'Fetching related siteaccess ' . "'" . $relatedSiteAccess . "'" . ' image.ini:[AliasSettings] AliasList[] image aliases defined' );
+            }
+
+            $siteaccessAliases = eZINI::getSiteAccessIni( $relatedSiteAccess, 'image.ini' )->variable( 'AliasSettings', 'AliasList' );
+
+            // Default related siteaccess image alias settings
+            if( $siteaccessAliases != false )
+            {
+                // Add siteaccess defined image aliases into array
+                foreach( $siteaccessAliases as $siteaccessAlias )
+                {
+                    if( !in_array( $siteaccessAlias, $aliases ) )
+                    {
+                        $aliases[] = $siteaccessAlias;
+                    }
+                }
+
+                // Add default siteacess settings aliases into array
+                foreach( eZINI::instance( 'image.ini', 'settings', null, null, false, true )->variable( 'AliasSettings', 'AliasList' ) as $defaultSettingAlias )
+                {
+                    if( !in_array( $defaultSettingAlias, $aliases ) )
+                    {
+                        $aliases[] = $defaultSettingAlias;
+                    }
+                }
+
+                // Optional debug output
+                if( $troubleshoot == true && $troubleshootLevel >= 3 )
+                {
+                    $cli->output( 'All siteaccess ' . "'" . $relatedSiteAccess . "'" . ' image.ini:[AliasSettings] AliasList[] image aliases defined' );
+                    print_r( $aliases ); self::displayMessage( '', "\n");
+                }
+            }
+        }
+    }
+}
 
 // Default datatypes to generate image alias variations
 $imageDataTypeStrings = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'ImageDataTypeStringList' );
@@ -97,7 +159,8 @@ if( !is_array( $imageDataTypeStrings ) )
 $contentClassImageAttributes = BCImageAlias::fetchContentClassImageAttributes();
 
 // Fetch content object image attributes
-$contentObjectImageAttributes = BCImageAlias::fetchImageAttributesByClassAttributes( $contentClassImageAttributes );
+$fetchContentClassImageAttributesFirstVersion = false;
+$contentObjectImageAttributes = BCImageAlias::fetchImageAttributesByClassAttributes( $contentClassImageAttributes, $fetchContentClassImageAttributesFirstVersion );
 $contentObjectImageAttributesCount = count( $contentObjectImageAttributes );
 
 // Estimated image alias variations
@@ -202,7 +265,7 @@ if( $generate && !$remove )
 else
 {
     // Alert the user to what has happened
-    if( $script->IterationIndex == 0 && $dry == false )
+    if( $dry == true )
     {
         $footerMessageSummary = ". No image alias variation image files deleted!\n";
     }
@@ -210,13 +273,21 @@ else
     {
         $footerMessageSummary = ". Image alias variation image files deleted!\n";
     }
-    if( $dry )
+    if( $verbose )
     {
-        $footerMessage = "\nNumber of images alias variation files in system: " . $script->IterationIndex . $footerMessageSummary;
+        $footerMessage = "";
     }
     else
     {
-        $footerMessage = "\nNumber of images alias variation files removed: " . $script->IterationIndex . $footerMessageSummary;
+        $footerMessage = "\n";
+    }
+    if( $dry )
+    {
+        $footerMessage .= 'Number of images alias variation files in system: ' . $script->IterationIndex . $footerMessageSummary;
+    }
+    else
+    {
+        $footerMessage .= $script->IterationIndex == 0 ? '' : "\n" . 'Number of images alias variation files removed: ' . $script->IterationIndex . $footerMessageSummary;
     }
 }
 $cli->output( $footerMessage );

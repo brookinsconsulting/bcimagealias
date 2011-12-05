@@ -6,7 +6,7 @@ Introduction
 1. What is the BC ImageAlias extension?
    ------------------------------------------------
 
-   BC ImageAlias is a true eZ publish extension that
+   BC ImageAlias is a true eZ Publish extension that
    provides commandline script, workflow event and class
    methods to generate content object image alias variations.
 
@@ -18,8 +18,8 @@ Introduction
    BC ImageAlias is licensed under the GNU General Public License.
 
    The GNU GPL gives you the right to use, modify and redistribute
-   BC ImageAlias under certain conditions. The GNU GPL licence
-   is distributed with the software, see the file doc/LICENCE.
+   BC ImageAlias under certain conditions. The GNU GPL license
+   is distributed with the software, see the file doc/LICENSE.
    It is also available at http://www.gnu.org/licenses/gpl.txt
 
    Using BC ImageAlias under the terms of the GNU GPL is free (as in freedom).
@@ -32,11 +32,11 @@ Introduction
 
    The following requirements exists for using BC ImageAlias extension:
 
-   o  eZ publish version:
+   o  eZ Publish version:
 
-      Make sure you use eZ publish version 4.x or higher.
+      Make sure you use eZ Publish version 4.x (required) or higher.
 
-      eZ Publish 2011.10 (4.6+) is recommended.
+      eZ Publish 4.6.x+ (Community Build, 2011.11+) is recommended.
 
    o  PHP version:
 
@@ -53,7 +53,7 @@ http://share.ez.no/download
 
 NOTE: You will only require eZ Publish 4.x or higher (if you have a more recent version)
 
-Information on the installation of eZ publish can be found at:
+Information on the installation of eZ Publish can be found at:
 http://doc.ez.no/eZ-Publish/Technical-manual/4.6/Installation
 and
 http://doc.ez.no
@@ -64,7 +64,7 @@ Installing BC ImageAlias extension
 ==============================================
 
 1. Copy the package into the `extension' directory
-   in the root of your eZ publish installation.
+   in the root of your eZ Publish installation.
 
 2. Unpack the files in the distribution. The command
    necessary is depends on the file you downloaded.
@@ -73,7 +73,7 @@ Installing BC ImageAlias extension
    [zip]:
    $ unzip bcimagealias-0_0_22.tar.zip
 
-3. We must now enable the extension in eZ publish.
+3. We must now enable the extension in eZ Publish.
 
    To do this edit site.ini.append(.php) in the folder
    root_of_ezpublish/settings/override/. If this file does not exist;
@@ -98,7 +98,23 @@ Installing BC ImageAlias extension
 
 5. Enable kernel overrides
 
-Remember to edit your config.php and enable this line:
+5.1 Kernel Override Requirements
+
+   eZ Publish 4.x >= 4.0 - Requires both kernel overrides
+   -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.09+ ) - Requires both kernel overrides
+   -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.10+ ) - Requires only one kernel override
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ) - Requires only one kernel override
+   -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+
+5.2 Remember to edit your config.php and enable this line:
 
 define( 'EZP_AUTOLOAD_ALLOW_KERNEL_OVERRIDE', true );
 
@@ -119,7 +135,7 @@ php bin/php/ezpgenerateautoloads.php -v -o;
    ===========================
    If you wish to have content object image alias variations created just before objects are published. Enable this workflow and clear caches.
 
-   A) In the eZ publish admin, go to Setup -> Workflows
+   A) In the eZ Publish admin, go to Setup -> Workflows
       and click New Workflow Group.
 
    B) Name the group something like "Image Alias Variation Creation" and click OK.
@@ -144,9 +160,8 @@ php bin/php/ezpgenerateautoloads.php -v -o;
 
       In the table "Workflow Triggers" you will see a list of available triggers.
 
-      On the line: content, publish, after, (Workflow Drop Down)
-      "Click" the dropdown select the workflow event
-      you have just created.
+      On the line: 'content, publish, after', (Workflow Drop Down)
+      "Click" the dropdown select the workflow event you have just created.
 
    E) Clear all caches
 
@@ -156,7 +171,7 @@ php bin/php/ezpgenerateautoloads.php -v -o;
 
 8. (optional) Content Object Publish: Testing Workflow & Trigger Setup
    ===========================
-   After completing the above setup you should login to eZ publish
+   After completing the above setup you should login to eZ Publish
    create or edit a content object which uses the image datatype
    (ezimagetype datatype) in one or more content object attributes,
    add at least one image to image attribute, publish your content object.
@@ -169,7 +184,7 @@ Usage
 
 The generation command line script option --generate
 
-This script will generate all possible image alias variation image files each time it is executed without the -dry optio
+This script will generate all possible image alias variation image files each time it is executed without the --dry option. Note: --dry option is not supported with --generate.
 
 Simply run the provided command line script to generate all image alias variations in the system.
 
@@ -187,14 +202,18 @@ Examples alternatives:
 
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --verbose
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --verbose --dry
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=2
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=3
 
 
 The removal command line script option --remove
 
-This script will remove all possible image alias variation image files each time it is executed without the -dry option.
+This script will remove all possible image alias variation image files each time it is executed without the --dry option.
 
 Simply run the provided command line script to remove all image alias variation image files in the system.
 
@@ -212,9 +231,13 @@ Examples alternatives:
 
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --verbose
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --verbose --dry
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=2
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=3
 
 
 The generation workflow event

@@ -48,13 +48,16 @@ class BCImageAliasGenerateObjectImageVariationsType extends eZWorkflowEventType
          */
         $workflowEventForceGeneration = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventForceAliasImageVariationGeneration' ) == 'enabled' ? true : false;
         $workflowEventTroubleshootGeneration = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventTroubleshootAliasImageVariationGeneration' ) == 'enabled' ? true : false;
+        $workflowEventCurrentSiteAccessGeneration = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventCurrentSiteAccessAliasImageVariationGeneration' ) == 'enabled' ? true : false;
 
         /**
          * BCImageAlias execution parameters
          */
         $BCImageAliasExecutionParams = array( 'verbose' => false, 'dry' => false, 'iterate' => false,
                                               'force' => $workflowEventForceGeneration,
-                                              'troubleshoot' => $workflowEventTroubleshootGeneration );
+                                              'troubleshoot' => $workflowEventTroubleshootGeneration,
+                                              'troubleshootLevel' => 1,
+                                              'current-siteaccess' => $workflowEventCurrentSiteAccessGeneration );
 
         /**
          * Optional debug output

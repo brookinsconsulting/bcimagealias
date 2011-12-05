@@ -5,3 +5,9 @@ Primary development by Brookins Consulting
 
 Testing and class method internal functionality improvment development contributions from github.com/xserna
 
+Based on eZ Publish (4.6.0) default PHP kernel classes distributed by eZ Systems AS
+
+ - Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
+
+ - Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
+

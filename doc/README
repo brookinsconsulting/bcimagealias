@@ -3,7 +3,7 @@ BC ImageAlias extension README
 What is the BC ImageAlias extension?
 ================================
 
-BC ImageAlias is a true eZ publish extension
+BC ImageAlias is a true eZ Publish extension
 that provides commandline script, workflow event
 and class methods to generate content object
 image alias variations.
@@ -13,7 +13,7 @@ BC ImageAlias version
 =======================
 
 The current version of BC ImageAlias is 0.0.22
-Last Major update: November 22, 2011
+Last Major update: December 05, 2011
 
 You can find details about changes for this
 version in doc/changelogs/CHANGELOG-0.0.22
@@ -34,9 +34,9 @@ Requirements
 
 The following requirements exists for using BC ImageAlias extension:
 
-o  eZ publish version:
+o  eZ Publish version:
 
-   Make sure you use eZ publish version 4.x or higher. eZ Publish 4.5+ is recommended.
+   Make sure you use eZ Publish version 4.x (required) or higher. eZ Publish 4.6.x+ (Community Build, 2011.11+) is recommended.
 
 o  PHP version:
 
@@ -54,7 +54,7 @@ Usage
 
 The generation command line script option --generate
 
-This script will generate all possible image alias variation image files each time it is executed without the -dry optio
+This script will generate all possible image alias variation image files each time it is executed without the --dry option. Note: --dry option is not supported with --generate.
 
 Simply run the provided command line script to generate all image alias variations in the system.
 
@@ -72,14 +72,18 @@ Examples alternatives:
 
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --verbose
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --verbose --dry
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=2
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=3
 
 
 The removal command line script option --remove
 
-This script will remove all possible image alias variation image files each time it is executed without the -dry option.
+This script will remove all possible image alias variation image files each time it is executed without the --dry option.
 
 Simply run the provided command line script to remove all image alias variation image files in the system.
 
@@ -97,9 +101,13 @@ Examples alternatives:
 
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --verbose
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --verbose --dry
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=2
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=3
 
 
 The generation workflow event
