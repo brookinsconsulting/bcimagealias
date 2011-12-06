@@ -80,6 +80,8 @@ Examples alternatives:
 
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=3
 
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --object-id=108 --script-verbose --troubleshoot-level=2
+
 
 The removal command line script option --remove
 
@@ -108,6 +110,8 @@ Examples alternatives:
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=2
 
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=3
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --related-siteaccesses --object-id=108 --script-verbose --troubleshoot-level=2
 
 
 The generation workflow event

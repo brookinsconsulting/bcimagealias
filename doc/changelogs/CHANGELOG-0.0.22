@@ -1,7 +1,9 @@
 CHANGELOG 0.0.22
 
 - Added: Changelog for 0.0.22 in doc/changelogs/CHANGELOG-0.0.22
+- Added: bcimagealias.php cli script parameter object-id which provides for creation and removal of image aliases of one object
 - Rename: Rename workflow event PHP and workflow.ini settings to fix maximum workflow_type_string max_length of 50 characters. Re: "Debug: truncation of workflow_type_string to max_length=50"
+- Updated: Added additional script parameters and functionality
 - Updated: Expanded phpdoc comments
 - Updated: Expanded workflow event comments
 - Updated: Expanded BCImageAlias method comments

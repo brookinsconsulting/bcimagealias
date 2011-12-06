@@ -32,26 +32,28 @@ $script = eZScript::instance( array( 'description' =>
                                      'use-extensions' => true ) );
 
 // Fetch default script options
-$options = $script->getOptions( '[force;][dry;][script-verbose;][generate;][remove;][troubleshoot-level;][related-siteaccesses;]',
+$options = $script->getOptions( '[force;][dry;][script-verbose;][generate;][remove;][troubleshoot-level;][related-siteaccesses;][object-id;]',
                                 '[name]', array( 'force' => 'Force generation or removal. Disable delayed startup. Optional. Defaults to false',
                                                  'dry' => 'Use only with --' . "'remove'" . ' parameter to make no system changes. Simulate the removal of content object attribute image datatype image alias image variation image files from system. Example: ' . "'--dry'" . ' is an optional parameter which defaults to false',
                                                  'script-verbose' => 'Use this parameter to display verbose script output without disabling script iteration counting of images generated or removed. Example: ' . "'--script-verbose'" . ' is an optional parameter which defaults to false',
                                                  'generate' => 'Generate content object attribute image datatype image alias image variation image files. Either ' . "'--generate' or '--remove'" . ' are required parameters',
                                                  'remove' => 'Remove existing content object attribute image datatype image alias image variation image files from system. Either ' . "'--generate' or '--remove'" . ' are required parameters',
                                                  'troubleshoot-level' => 'Use only with --' . "'script-verbose'" . ' parameter to see more of execution internals. Example: --' . "'troubleshoot-level'" . '=2 is an optional parameter which defaults to 1',
-                                                 'related-siteaccesses' => 'Use only with --' . "'generate'" . ' parameter to fetch image alias settings definitions from all related siteaccess to current siteaccess. Example: --' . "'related-siteaccesses'" . '=true is an optional parameter which defaults to false'
+                                                 'related-siteaccesses' => 'Use only with --' . "'generate'" . ' parameter to fetch image alias settings definitions from all related siteaccess to current siteaccess. Example: --' . "'related-siteaccesses'" . '=true is an optional parameter which defaults to false',
+                                                 'object-id' => 'Use only with --' . "'generate'" . ' or --' . "'remove'" . ' parameters to perform operations on a single content object. Example: --' . "'object-id'" . '=2 is an optional parameter which defaults to false'
                                                ) );
 
 // Script parameters
 $siteAccess = $options['siteaccess'] ? $options['siteaccess'] : false;
 $troubleshootLevel = isset( $options['troubleshoot-level'] ) ? $options['troubleshoot-level'] : 1;
-$troubleshoot = isset( $options['troubleshoot-level'] ) ? true : true;
+$troubleshoot = ( isset( $options['troubleshoot-level'] ) && $options['troubleshoot-level'] > 0 ) ? true : false;
 $verbose = isset( $options['script-verbose'] ) ? true : false;
 $force = isset( $options['force'] ) ? true : false;
 $dry = isset( $options['dry'] ) ? true : false;
 $generate = isset( $options['generate'] ) ? true : false;
 $remove = isset( $options['remove'] ) ? true : false;
 $currentSiteaccess = isset( $options['related-siteaccesses'] ) ? false : true;
+$objectID = isset( $options['object-id'] ) ? $options['object-id'] : false;
 
 if( $generate == false && $remove == false )
 {
@@ -158,21 +160,49 @@ if( !is_array( $imageDataTypeStrings ) )
 // Fetch content class image attributes
 $contentClassImageAttributes = BCImageAlias::fetchContentClassImageAttributes();
 
-// Fetch content object image attributes
-$fetchContentClassImageAttributesFirstVersion = false;
-$contentObjectImageAttributes = BCImageAlias::fetchImageAttributesByClassAttributes( $contentClassImageAttributes, $fetchContentClassImageAttributesFirstVersion );
-$contentObjectImageAttributesCount = count( $contentObjectImageAttributes );
+if( $objectID == false )
+{
+    // Fetch content object image attributes
+    $fetchContentClassImageAttributesFirstVersion = false;
+    $contentObjectImageAttributes = BCImageAlias::fetchImageAttributesByClassAttributes( $contentClassImageAttributes, $fetchContentClassImageAttributesFirstVersion );
+    $contentObjectImageAttributesCount = count( $contentObjectImageAttributes );
 
-// Estimated image alias variations
-// Based on the number of image aliases in the current siteaccess
-// defined in current siteaccess settings * the number of content
-// object attribute datatype images (number of images used within eZ Publish Content Trees)
-$imageAliasVariationCount = $contentObjectImageAttributesCount * count( $aliases ) * count( $imageDataTypeStrings );
-$script->resetIteration( $imageAliasVariationCount );
+    // Estimated image alias variations
+    // Based on the number of image aliases in the current siteaccess
+    // defined in current siteaccess settings * the number of content
+    // object attribute datatype images (number of images used within eZ Publish Content Trees)
+    $imageAliasVariationCount = $contentObjectImageAttributesCount * count( $aliases ) * count( $imageDataTypeStrings );
+    $script->resetIteration( $imageAliasVariationCount );
+}
+elseif( $objectID != false )
+{
+    /**
+     * Fetch content object
+     */
+    // Default datatypes to generate image alias variations
+    $imageDataTypeStrings = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'ImageDataTypeStringList' );
+
+    $object = eZContentObject::fetch( $objectID );
+    $objectDataMap = $object->attribute( 'data_map' );
+    $objectContentClassImageAttributes = array();
+
+    foreach( $objectDataMap as $objectAttribute )
+    {
+        if( in_array( $objectAttribute->attribute( 'data_type_string' ), $imageDataTypeStrings ) )
+        {
+            $objectContentClassImageAttributes[] = $objectAttribute;
+        }
+    }
+
+    $contentObjectImageAttributesCount = count( $objectContentClassImageAttributes );
+    $imageAliasVariationCount = $contentObjectImageAttributesCount * count( $aliases ) * count( $imageDataTypeStrings );
+    $script->resetIteration( $imageAliasVariationCount );
+}
 
 // Warn user and wait for user abort
 if ( !$force )
 {
+    // Perform operastions for cases which do not object specific
     if( $generate && !$remove )
     {
         if( $dry )
@@ -206,88 +236,189 @@ if ( !$force )
             $cli->warning( "You can run this script with --dry switch to just view which files are going to be removed." );
         }
     }
+
     $cli->warning( "You have 10 seconds to stop the script execution before it starts (press Ctrl-C)." );
 
     sleep( 10 );
     $cli->output();
 }
 
-if( $generate && !$remove )
+// Test for cases which do not operate by object
+if( $objectID == false )
 {
-    // Alert the user to what is happening
-    if( $dry && $generate )
+    // Perform operastions for cases which do not operate by object
+    if( $generate && !$remove )
     {
-        $headerActionMessage = "Dry run: Pretending to generate image alias image variation image files for all content objects\n";
+        // Alert the user to what is happening
+        if( $dry && $generate )
+        {
+            $headerActionMessage = "Dry run: Pretending to generate image alias image variation image files for all content objects\n";
+        }
+        else
+        {
+            $headerActionMessage = "Generating image alias image variation image files for all content objects\n";
+        }
     }
     else
     {
-        $headerActionMessage = "Generating image alias image variation image files for all content objects\n";
+        // Alert the user to what is happening
+        if( $dry && $remove )
+        {
+            $headerActionMessage = "Dry run: Pretending to remove image alias image variation files for all content objects\n";
+        }
+        else
+        {
+            $headerActionMessage = "Removing image alias image variation files for all content objects\n";
+        }
     }
 }
-else
+elseif( $objectID != false )
 {
-    // Alert the user to what is happening
-    if( $dry && $remove )
+    // Test for cases which operate by object
+    if( $generate && !$remove )
     {
-        $headerActionMessage = "Dry run: Pretending to remove image alias image variation files for all content objects\n";
+        // Alert the user to what is happening
+        if( $dry && $generate )
+        {
+            $headerActionMessage = "Dry run: Pretending to generate image alias image variation image files content object\n";
+        }
+        else
+        {
+            $headerActionMessage = "Generating image alias image variation image files for all content object\n";
+        }
     }
     else
     {
-        $headerActionMessage = "Removing image alias image variation files for all content objects\n";
+        // Alert the user to what is happening
+        if( $dry && $remove )
+        {
+            $headerActionMessage = "Dry run: Pretending to remove image alias image variation files for all content object\n";
+        }
+        else
+        {
+            $headerActionMessage = "Removing image alias image variation files for all content object\n";
+        }
     }
 }
 $cli->output( $cli->stylize( 'header', $headerActionMessage ) );
 
+// Test for cases which do not operate by object
+if( $objectID == false )
+{
+    // Perform operastions for cases which do not operate by object
+    if( $generate && !$remove )
+    {
+        // Attempt to generate image alias variations
+        $result = BCImageAlias::instance( $scriptExecutionOptions )->createByAttributes( $contentObjectImageAttributes );
+    }
+    else
+    {
+        // Attempt to remove image alias variation files
+        $result = BCImageAlias::instance( $scriptExecutionOptions )->removeAllAliases( $contentObjectImageAttributes );
+    }
+}
+elseif( $objectID != false )
+{
+    // Test for cases which operate by object
+    if( $generate && !$remove )
+    {
+        // Attempt to generate image alias variations
+        $result = BCImageAlias::instance( $scriptExecutionOptions )->createByObject( $object );
+    }
+    else
+    {
+        // Attempt to remove image alias variation files
+        $result = BCImageAlias::instance( $scriptExecutionOptions )->removeByObject( $object );
+    }
+}
 
-if( $generate && !$remove )
+// Test for cases which do not operate by object
+if( $objectID == false )
 {
-    // Attempt to generate image alias variations
-    $result = BCImageAlias::instance( $scriptExecutionOptions )->createByAttributes( $contentObjectImageAttributes );
+    // Perform operastions for cases which do not operate by object
+    if( $generate && !$remove )
+    {
+        // Alert the user to what has happened
+        if( $dry )
+        {
+            $footerMessage = "\nPretended to generate " . $script->IterationIndex . " image alias variation image files. No image alias variation image files created!\n";
+        }
+        else
+        {
+            $footerMessage = "\nGenerated " . $script->IterationIndex . " image alias variation image files. Image alias variation image files created!\n";
+        }
+    }
+    else
+    {
+        // Alert the user to what has happened
+        if( $dry == true )
+        {
+            $footerMessageSummary = ". No image alias variation image files deleted!\n";
+        }
+        else
+        {
+            $footerMessageSummary = ". Image alias variation image files deleted!\n";
+        }
+        if( $verbose )
+        {
+            $footerMessage = "";
+        }
+        else
+        {
+            $footerMessage = "\n";
+        }
+        if( $dry )
+        {
+            $footerMessage .= 'Number of images alias variation files in system: ' . $script->IterationIndex . $footerMessageSummary;
+        }
+        else
+        {
+            $footerMessage .= $script->IterationIndex == 0 ? '' : "\n" . 'Number of images alias variation files removed: ' . $script->IterationIndex . $footerMessageSummary;
+        }
+    }
 }
-else
+elseif( $objectID != false )
 {
-    // Attempt to remove image alias variation files
-    $result = BCImageAlias::instance( $scriptExecutionOptions )->removeAllAliases( $contentObjectImageAttributes );
-}
-
-if( $generate && !$remove )
-{
-    // Alert the user to what has happened
-    if( $dry )
+    // Test for cases which operate by object
+    if( $generate && !$remove )
     {
-        $footerMessage = "\nPretended to generate " . $script->IterationIndex . " image alias variation image files. No image alias variation image files created!\n";
+        // Alert the user to what has happened
+        if( $dry )
+        {
+            $footerMessage = "\nPretended to generate " . $script->IterationIndex . " image alias variation image files. No image alias variation image files created!\n";
+        }
+        else
+        {
+            $footerMessage = "\nGenerated " . $script->IterationIndex . " image alias variation image files. Image alias variation image files created!\n";
+        }
     }
     else
     {
-        $footerMessage = "\nGenerated " . $script->IterationIndex . " image alias variation image files. Image alias variation image files created!\n";
-    }
-}
-else
-{
-    // Alert the user to what has happened
-    if( $dry == true )
-    {
-        $footerMessageSummary = ". No image alias variation image files deleted!\n";
-    }
-    else
-    {
-        $footerMessageSummary = ". Image alias variation image files deleted!\n";
-    }
-    if( $verbose )
-    {
-        $footerMessage = "";
-    }
-    else
-    {
-        $footerMessage = "\n";
-    }
-    if( $dry )
-    {
-        $footerMessage .= 'Number of images alias variation files in system: ' . $script->IterationIndex . $footerMessageSummary;
-    }
-    else
-    {
-        $footerMessage .= $script->IterationIndex == 0 ? '' : "\n" . 'Number of images alias variation files removed: ' . $script->IterationIndex . $footerMessageSummary;
+        // Alert the user to what has happened
+        if( $dry == true )
+        {
+            $footerMessageSummary = ". No image alias variation image files deleted!\n";
+        }
+        else
+        {
+            $footerMessageSummary = ". Image alias variation image files deleted!\n";
+        }
+        if( $verbose )
+        {
+            $footerMessage = "";
+        }
+        else
+        {
+            $footerMessage = "\n";
+        }
+        if( $dry )
+        {
+            $footerMessage .= 'Number of images alias variation files in system: ' . $script->IterationIndex . $footerMessageSummary;
+        }
+        else
+        {
+            $footerMessage .= $script->IterationIndex == 0 ? '' : "\n" . 'Number of images alias variation files removed: ' . $script->IterationIndex . $footerMessageSummary;
+        }
     }
 }
 $cli->output( $footerMessage );

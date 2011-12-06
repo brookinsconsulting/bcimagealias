@@ -130,6 +130,7 @@ class BCImageAlias {
                            $contentClassImageAttributesArray ) )
             {
                 // Trigger the image alias variation generation
+
                 $results[] = self::createByAttribute( $contentObjectAttribute );
             }
             else
@@ -139,10 +140,72 @@ class BCImageAlias {
         }
         
         // Optional debug output
-        if( $executionOptions[ 'troubleshoot' ] == true )
+        if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'iterate' ] == false )
         {
             self::displayMessage( 'Here are the content object image attribute generation attempt results', "\n\n" );            
             self::displayMessage( 'True will show up as a 1. Theses results do not affect workflow completion as image aliases will not always be generated' );
+            print_r( $results ); self::displayMessage( '', "\n");
+        }
+
+        // Calculate return results based on execution options and results comparison
+        if( in_array( true, $results ) && count( $contentObjectAttributes ) == count( $results ) )
+        {
+            eZContentCacheManager::clearContentCacheIfNeeded( $object->attribute( 'id' ) );
+            return true;
+        }
+
+        return false;
+    }
+
+   /**
+     * Remove if alias variation does exist in content object image attribute image handler content
+     *
+     * @param object $object Object of class ezcontentobject. Required
+     * @return bool true if any image alias removal is called, false if not
+     * @static
+     */
+    static function removeByObject( $object = false )
+    {
+        if ( !$object )
+        {
+            return false;
+        }
+
+        $executionOptions = self::executionOptions();
+        $contentObjectAttributes = $object->contentObjectAttributes();
+        
+        $contentClassImageAttributes = self::fetchContentClassImageAttributes();
+        $contentClassImageAttributesArray = array();
+
+        foreach( $contentClassImageAttributes as $contentClassImageAttribute )
+        {
+            $contentClassImageAttributesArray[] = $contentClassImageAttribute->attribute( 'id' );
+        }
+
+        $results = array();
+
+        // Iterate over object attributes
+        foreach ( $contentObjectAttributes as $contentObjectAttribute )
+        {
+            // Test to ensure only attributes of class image are used
+            if ( in_array( $contentObjectAttribute->attribute('contentclassattribute_id') , 
+                           $contentClassImageAttributesArray ) )
+            {
+                // Trigger the image alias variation generation
+
+                $results[] = self::removeAllAliasesByAttribute( $contentObjectAttribute );
+            }
+            else
+            {
+                $results[] = false;
+            }
+        }
+        
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'troubleshootLevel' ] >= 2 )
+        {
+            self::displayMessage( 'Here are the content object image attribute removal attempt results', "\n\n" );            
+            self::displayMessage( 'True will show up as a 1. Theses results do not affect workflow completion as image aliases will not always be removed' );
             print_r( $results ); self::displayMessage( '', "\n");
         }
 
@@ -175,6 +238,10 @@ class BCImageAlias {
         $aliases = array();
         $executionOptions = self::executionOptions();
 
+        // Default image alias settings
+        $relatedSiteAccesses = eZINI::instance( 'site.ini' )->variable( 'SiteAccessSettings', 'RelatedSiteAccessList' );
+
+        // Fetch aliases for current siteaccess
         if( $executionOptions[ 'current-siteaccess' ] == true )
         {
             // Default image alias settings
@@ -182,8 +249,7 @@ class BCImageAlias {
         }
         else
         {
-            // Default image alias settings
-            $relatedSiteAccesses = eZINI::instance( 'site.ini' )->variable( 'SiteAccessSettings', 'RelatedSiteAccessList' );
+            // Fetch aliases for current siteaccess relateded siteaccesses
             if( is_array( $relatedSiteAccesses ) )
             {
                 foreach( $relatedSiteAccesses as $relatedSiteAccess )
@@ -281,7 +347,7 @@ class BCImageAlias {
                 print_r( array_keys( $imageManager->AliasList ) );
             }
         }
-        else
+        elseif( $executionOptions[ 'current-siteaccess' ] == false && $executionOptions[ 'iterate' ] == true )
         {
             $imageManager->readImageAliasesFromOriginalINI( 'image.ini' );
         }
