@@ -102,23 +102,33 @@ Installing BC ImageAlias extension
 
 Kernel Class Overrides based on eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ).
 
-While BCImageAlias by default requires both kernel overrides. If you do not use the related-siteaccess script parameter, workflow event setting, and php class property, then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' kernel class override.
+While BCImageAlias by default requires both kernel overrides to provide the features within eZ Publish. 
 
-   eZ Publish 4.x >= 4.0 - BCImageAlias by default requires both kernel overrides
+Though based on your usage (like what version of eZ Publish are you using bcimagealias with?) of the bcimagealias extension (which parts of the extension do you require, which do you not require?) you may be able to avoid using the provided kernel overrides entirely.
+
+If you do not use the 'related-siteaccess' script parameter, workflow event ini setting, and php class property, then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' (modified) kernel class override be installed. The ezimagemanager class was modified to allow loading alias settings from multiple siteaccess ini override files and the default ini file directly to allow eZ Publish to create all the image aliases defined by default (in image.ini) and in several siteaccesses (related siteacesses setting in current siteaccess). Without this you additional functionality you can only generate image aliases defined within the current siteaccess. This may or may not be a concern to others depending on your specific use cases.
+
+Users of eZ Publish version 'Community Build 2011.11' or greater do not require the kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' (unmodified) at all and likely never will.
+
+The kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' was introduced into the extension in the aim of providing a convenient alternative to upgrading your entire eZ Publish 4.x installation to the 2011.11 build when all you need is one php class file to accomplish the task at hand, remove image aliases or generate them. This override if unused may be removed from the extension in the future.
+
+Also there were issues with the changes introduce in 2011.09 build later resolved in the 2011.11 build. Users of eZ Publish Community Build 2011.09, 2011.10 (or any version before) should likely use our provided kernel override as the extension is designed to use this version specifically for most use cases (our unmodified copies come from the 2011.11 build sources in which the previous issues are correctly resolved). After you upgrade to or beyond eZ Publish Community build 2011.11 you can remove this kernel override.
+
+   eZ Publish 4.x >= 4.0 - BCImageAlias by default requires both kernel overrides for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.09+ ) - BCImageAlias by default requires both kernel overrides
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.09+ ) - BCImageAlias by default requires both kernel overrides for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.10+ ) - BCImageAlias by default requires only one kernel override
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.10+ ) - BCImageAlias by default requires only one kernel override for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ) - BCImageAlias by default requires only one kernel override
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ) - BCImageAlias by default requires only one kernel override for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.12+ ) - BCImageAlias by default requires only one kernel override
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.12+ ) - BCImageAlias by default requires only one kernel override for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
 
@@ -190,84 +200,7 @@ php bin/php/ezpgenerateautoloads.php -v -o;
 Usage
 ==============================
 
-The generation command line script option --generate
-
-This script will generate all possible image alias variation image files each time it is executed without the --dry option. Note: --dry option is not supported with --generate.
-
-Simply run the provided command line script to generate all image alias variations in the system.
-
-cd /path/to/ezpublish/;
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate
-
-
-Use --help option to review available command line options:
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --help
-
-
-Examples alternatives:
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=2
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=3
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --generate --force --related-siteaccesses --object-id=108 --script-verbose --troubleshoot-level=2
-
-
-The removal command line script option --remove
-
-This script will remove all possible image alias variation image files each time it is executed without the --dry option.
-
-Simply run the provided command line script to remove all image alias variation image files in the system.
-
-cd /path/to/ezpublish/;
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove
-
-
-Use --help option to review available command line options:
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --help
-
-
-Examples alternatives:
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=2
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --script-verbose --dry --troubleshoot-level=3
-
-./extension/bcimagealias/bin/php/bcimagealias.php --siteacess ezwebin_site_user --remove --force --related-siteaccesses --object-id=108 --script-verbose --troubleshoot-level=2
-
-
-The generation workflow event
-
-Install the optional provided workflow event 'generateobjectimagealiases' on the 'content, publish, before' trigger to enable content object image alias variations to be created each time a user publishes a content object.
-
-Detailed directions on installing and configuring the workflow event and trigger configuration available in the above section '6. (optional) Workflow & Trigger Setup' of this INSTALL documentation.
-
-
-The generate cronjob part
-
-This script will generaqte all possible image alias variation image files each time it is executed.
-
-Simply run the provided command line runcronjobs script to generate all image alias variation image files in the system.
-
-cd /path/to/ezpublish/;
-
-php ./runcronjobs.php bcimagealiasgenerate
+The complete extension usage documentation is included in the file doc/USAGE.
 
 
 Troubleshooting
@@ -277,7 +210,7 @@ Troubleshooting
    ------------
 
    Some problems are more common than others. The most common ones are listed
-   in the the FAQ.
+   in the the doc/FAQ.
 
 2. Support
    -------

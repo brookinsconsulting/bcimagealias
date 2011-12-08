@@ -48,23 +48,55 @@ This means the estimated execution time to delete each image alias variation ima
 
 Kernel Class Overrides based on eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ).
 
-While BCImageAlias by default requires both kernel overrides. If you do not use the related-siteaccess script parameter, workflow event setting, and php class property, then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' kernel class override.
+While BCImageAlias by default requires both kernel overrides to provide the features within eZ Publish. 
 
-   eZ Publish 4.x >= 4.0 - BCImageAlias by default requires both kernel overrides
+Though based on your usage (like what version of eZ Publish are you using bcimagealias with?) of the bcimagealias extension (which parts of the extension do you require, which do you not require?) you may be able to avoid using the provided kernel overrides entirely.
+
+If you do not use the 'related-siteaccess' script parameter, workflow event ini setting, and php class property, then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' (modified) kernel class override be installed. The ezimagemanager class was modified to allow loading alias settings from multiple siteaccess ini override files and the default ini file directly to allow eZ Publish to create all the image aliases defined by default (in image.ini) and in several siteaccesses (related siteacesses setting in current siteaccess). Without this you additional functionality you can only generate image aliases defined within the current siteaccess. This may or may not be a concern to others depending on your specific use cases.
+
+Users of eZ Publish version 'Community Build 2011.11' or greater do not require the kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' (unmodified) at all and likely never will.
+
+The kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' was introduced into the extension in the aim of providing a convenient alternative to upgrading your entire eZ Publish 4.x installation to the 2011.11 build when all you need is one php class file to accomplish the task at hand, remove image aliases or generate them. This override if unused may be removed from the extension in the future.
+
+Also there were issues with the changes introduce in 2011.09 build later resolved in the 2011.11 build. Users of eZ Publish Community Build 2011.09, 2011.10 (or any version before) should likely use our provided kernel override as the extension is designed to use this version specifically for most use cases (our unmodified copies come from the 2011.11 build sources in which the previous issues are correctly resolved). After you upgrade to or beyond eZ Publish Community build 2011.11 you can remove this kernel override.
+
+   eZ Publish 4.x >= 4.0 - BCImageAlias by default requires both kernel overrides for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.09+ ) - BCImageAlias by default requires both kernel overrides
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.09+ ) - BCImageAlias by default requires both kernel overrides for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.10+ ) - BCImageAlias by default requires only one kernel override
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.10+ ) - BCImageAlias by default requires only one kernel override for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ) - BCImageAlias by default requires only one kernel override
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.11+ ) - BCImageAlias by default requires only one kernel override for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
-   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.12+ ) - BCImageAlias by default requires only one kernel override
+   eZ Publish 4.6.x >= 4.6 ( Community Build, 2011.12+ ) - BCImageAlias by default requires only one kernel override for this version of eZ Publish
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
+
+6) Specifics about image aliases and image alias image variation image files in eZ Publish
+
+- When image aliases are created (on the fly/on demand/when used) a new version of the content object attribute is stored with the updated image alias generated list is stored in xml and saved to the database. While the content object / node version remains unchanged. This is important to realize and understand when working with image aliases.
+
+- Image alias content can be unique between content object attribute versions (different aliases generated, different uploaded file content, etc)
+
+-- Image alias image variations are unique to content object attributes and not shared among other attributes, though attribute versions may have the same content stored or different cache timestamp.
+
+- Image alias image variation image files are not unique to content object attribute versions, content object versions, node or any other system.
+
+- When you upload a new different file into a content object image attribute the previous image alias cache is expired and the aliases are regenerated upon the next usage (any siteaccess). The files are not removed, only until the attribute alias content is accessed are new image alias variation image files created.
+
+- There is not a benefit to trying to remove image alias's image variation image files of non-published or older-versions of content object versions to reduce disk usage because they do not exist. First a non-published node/object would not be able to have aliases at this point in the process. Second even after another version of a node/object is published with different content, Their is no second set of image aliases in the system. Rather the system merely expires the cache of the image alias variations, when they are used again within the system, the alias image variations are regenerated using the new attribute content on the fly on demand. So there is no way to reduce image alias total disk usage in general without removing the use of image aliases within an eZ Publish installation first. You can reduce image alias usage in one of two ways in most situations. Remove content from eZ Publish, remove unused image alias settings, configure your installation to use less image aliases in your settings, templates, PHP code, javascript, etc.
+
+- Image alias image variation files stored on disk are stored ruffly using the following convention, 'var/ezwebin_site/storage/images/parent-node-name/2nd-parent-node-name/node-name/attributeID-1-local/(variation image files, named 'original-file-name_aliasname.jpg')'. Here is a real life default example of an 'original' image alias variation image filepath. IE: var/ezwebin_site/storage/images/getting-started/how-to-use-ez-publish/592-1-eng-US/How-to-use-eZ-Publish.jpg
+
+-- This means you can detect image aliases used in an output filter, fetch the same attribute, regenerate the aliases required etc and replace the alias used in the output buffer for mobile sites using embedded ezxml content used within mobile siteaccesses, as image aliases are mostly only content object attribute specific.
+
+- The image alias system is provided to the end user through the ezimage datatype only.
+
+- You can create datatypes based on ezimage which can be used with bcimagealias extension as we have designed this aspect of the solution to be simple and flexible to use. See the bcimagealias.ini setting file for examples.
 

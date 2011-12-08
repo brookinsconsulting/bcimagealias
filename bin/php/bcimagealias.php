@@ -21,26 +21,30 @@ set_time_limit( 0 );
 // Load cli and script environment
 $cli = eZCLI::instance();
 $script = eZScript::instance( array( 'description' =>
-                                     'eZ Publish content object attribute image alias variation generator / remover. ' .
-                                     'This script makes sure that content object attribute image' .
-                                     ' alias variation image files are generated (before they are requested by users) or removed (for maintinence).',
-                                     'extended-description' => '1. fetch ezcontentclass having an ezimage attribute, ' .
-                                                               '2. fetch objects of these classes, ' .
-                                                               '3. purge image alias image variation image files for all content objects',
+                                     'eZ Publish content tree node content object attribute image alias variation image file generator / remover. ' .
+                                     'This script makes sure that content object attribute image ' .
+                                     'alias variation image files are generated (before they are requested by users) or removed (for maintinence).',
+                                     'extended-description' => '1. fetch ezcontentclass having an ezimage (or other defined datatype) attributes, ' .
+                                                               '2.1. fetch objects of these classes,' .
+                                                               '2.2. purge image alias image variation image files for all content objects' .
+                                                               '3. fetch node (and possibly node children) and create array of unique objects' .
+                                                               '3.1. purge image alias image variation image files for all content objects',
                                      'use-session' => false,
                                      'use-modules' => false,
                                      'use-extensions' => true ) );
 
 // Fetch default script options
-$options = $script->getOptions( '[force;][dry;][script-verbose;][generate;][remove;][troubleshoot-level;][related-siteaccesses;][object-id;]',
-                                '[name]', array( 'force' => 'Force generation or removal. Disable delayed startup. Optional. Defaults to false',
-                                                 'dry' => 'Use only with --' . "'remove'" . ' parameter to make no system changes. Simulate the removal of content object attribute image datatype image alias image variation image files from system. Example: ' . "'--dry'" . ' is an optional parameter which defaults to false',
+$options = $script->getOptions( '[force;][dry;][script-verbose;][generate;][remove;][troubleshoot-level;][related-siteaccesses;][object-id;][node-id;][subtree-children;]',
+                                '[name]', array( 'force' => 'Force generation or removal. Disable delayed startup. Example: ' . "'--force'" . ' is an optional parameter which defaults to false',
+                                                 'dry' => 'Use only with ' . "'--remove'" . ' parameter to make no system changes. Simulate the removal of content object attribute image datatype image alias image variation image files from system. Example: ' . "'--dry'" . ' is an optional parameter which defaults to false',
                                                  'script-verbose' => 'Use this parameter to display verbose script output without disabling script iteration counting of images generated or removed. Example: ' . "'--script-verbose'" . ' is an optional parameter which defaults to false',
                                                  'generate' => 'Generate content object attribute image datatype image alias image variation image files. Either ' . "'--generate' or '--remove'" . ' are required parameters',
                                                  'remove' => 'Remove existing content object attribute image datatype image alias image variation image files from system. Either ' . "'--generate' or '--remove'" . ' are required parameters',
-                                                 'troubleshoot-level' => 'Use only with --' . "'script-verbose'" . ' parameter to see more of execution internals. Example: --' . "'troubleshoot-level'" . '=2 is an optional parameter which defaults to 1',
-                                                 'related-siteaccesses' => 'Use only with --' . "'generate'" . ' parameter to fetch image alias settings definitions from all related siteaccess to current siteaccess. Example: --' . "'related-siteaccesses'" . '=true is an optional parameter which defaults to false',
-                                                 'object-id' => 'Use only with --' . "'generate'" . ' or --' . "'remove'" . ' parameters to perform operations on a single content object. Example: --' . "'object-id'" . '=2 is an optional parameter which defaults to false'
+                                                 'troubleshoot-level' => 'Use only with ' . "'--script-verbose'" . ' parameter to see more of execution internals. Example: ' . "'--troubleshoot-level=2'" . ' is an optional parameter which defaults to 1',
+                                                 'related-siteaccesses' => 'Use only with ' . "'--generate'" . ' or ' . "'--remove'" . ' parameters to fetch image alias settings definitions from all related siteaccess to current siteaccess. Example: ' . "'--related-siteaccesses=true'" . ' is an optional parameter which defaults to false',
+                                                 'object-id' => 'Use only with ' . "'--generate'" . ' or ' . "'--remove'" . ' parameters to perform operations on a single content object. Example: ' . "'--object-id=2'" . ' is an optional parameter which defaults to false',
+                                                 'node-id' => 'Use only with ' . "'--generate'" . ' or ' . "'--remove'" . ' parameters to perform operations on a single content tree node. Do not use with ' . "'--object-id'" . ' parameter. Example: --' . "'node-id=2'" . ' is an optional parameter which defaults to false',
+                                                 'subtree-children' => 'Use only with ' . "'--node-id'" . ' parameter to perform operations on all content tree node subtree children as well. Example: ' . "'--subtree-children'" . ' is an optional parameter which defaults to false'
                                                ) );
 
 // Script parameters
@@ -54,8 +58,10 @@ $generate = isset( $options['generate'] ) ? true : false;
 $remove = isset( $options['remove'] ) ? true : false;
 $currentSiteaccess = isset( $options['related-siteaccesses'] ) ? false : true;
 $objectID = isset( $options['object-id'] ) ? $options['object-id'] : false;
+$nodeID = isset( $options['node-id'] ) ? $options['node-id'] : false;
+$subtreeChildren = isset( $options['subtree-children'] ) ? $options['subtree-children'] : false;
 
-if( $generate == false && $remove == false )
+if( !$generate && !$remove )
 {
     $cli->warning( "To run this script you must pass one of the required arguments --generate or --remove to use this extension script" );
     $cli->warning( "You can run this script with --dry switch to just view which files are going to be generated or removed." );
@@ -65,7 +71,7 @@ if( $generate == false && $remove == false )
 }
 
 // Alert user to current siteaccess used for process
-if ( $siteAccess || ( $verbose && $siteAccess != '' ) || ( $dry && $siteAccess!= '' ) )
+if ( $siteAccess || ( $verbose && $siteAccess != '' ) || ( $dry && $siteAccess != '' ) )
 {
     if ( in_array( $siteAccess, eZINI::instance()->variable( 'SiteAccessSettings', 'AvailableSiteAccessList' ) ) )
     {
@@ -93,7 +99,7 @@ $contentObjectImageAttributesCount = 0;
 $aliases = array();
 
 // Switch based on siteaccess usage
-if( $currentSiteaccess == true )
+if( $currentSiteaccess )
 {
     // Default image alias settings
     $aliases = eZINI::instance( 'image.ini' )->variable( 'AliasSettings', 'AliasList' );
@@ -107,7 +113,7 @@ else
         foreach( $relatedSiteAccesses as $relatedSiteAccess )
         {
             // Optional debug output
-            if( $troubleshoot == true && $troubleshootLevel >= 3 )
+            if( $troubleshoot && $troubleshootLevel >= 3 )
             {
                 $cli->output( 'Fetching related siteaccess ' . "'" . $relatedSiteAccess . "'" . ' image.ini:[AliasSettings] AliasList[] image aliases defined' );
             }
@@ -136,7 +142,7 @@ else
                 }
 
                 // Optional debug output
-                if( $troubleshoot == true && $troubleshootLevel >= 3 )
+                if( $troubleshoot && $troubleshootLevel >= 3 )
                 {
                     $cli->output( 'All siteaccess ' . "'" . $relatedSiteAccess . "'" . ' image.ini:[AliasSettings] AliasList[] image aliases defined' );
                     print_r( $aliases ); self::displayMessage( '', "\n");
@@ -151,7 +157,7 @@ $imageDataTypeStrings = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImag
 
 if( !is_array( $imageDataTypeStrings ) )
 {
-    $cli->warning( "You must first clear all ini caches to use this extension script" );
+    $cli->warning( "You must enable the bcimagealias extension for the default siteaccess first and clear all ini caches to use this extension script" );
     $cli->output();
     // Shutdown the script and exit eZ
     $script->shutdown( 1 );
@@ -160,21 +166,22 @@ if( !is_array( $imageDataTypeStrings ) )
 // Fetch content class image attributes
 $contentClassImageAttributes = BCImageAlias::fetchContentClassImageAttributes();
 
-if( $objectID == false )
+// Perform node / all specific operations
+if( ( $nodeID != false && !$objectID ) || ( !$objectID && !$nodeID ) )
 {
-    // Fetch content object image attributes
-    $fetchContentClassImageAttributesFirstVersion = false;
-    $contentObjectImageAttributes = BCImageAlias::fetchImageAttributesByClassAttributes( $contentClassImageAttributes, $fetchContentClassImageAttributesFirstVersion );
-    $contentObjectImageAttributesCount = count( $contentObjectImageAttributes );
+        // Fetch content object image attributes
+        $fetchContentClassImageAttributesFirstVersion = false;
+        $contentObjectImageAttributes = BCImageAlias::fetchImageAttributesByClassAttributes( $contentClassImageAttributes, $fetchContentClassImageAttributesFirstVersion );
+        $contentObjectImageAttributesCount = count( $contentObjectImageAttributes );
 
-    // Estimated image alias variations
-    // Based on the number of image aliases in the current siteaccess
-    // defined in current siteaccess settings * the number of content
-    // object attribute datatype images (number of images used within eZ Publish Content Trees)
-    $imageAliasVariationCount = $contentObjectImageAttributesCount * count( $aliases ) * count( $imageDataTypeStrings );
-    $script->resetIteration( $imageAliasVariationCount );
+        // Estimated image alias variations
+        // Based on the number of image aliases in the current siteaccess
+        // defined in current siteaccess settings * the number of content
+        // object attribute datatype images (number of images used within eZ Publish Content Trees)
+        $imageAliasVariationCount = $contentObjectImageAttributesCount * count( $aliases ) * count( $imageDataTypeStrings );
+        $script->resetIteration( $imageAliasVariationCount );
 }
-elseif( $objectID != false )
+elseif( $objectID != false && !$nodeID )
 {
     /**
      * Fetch content object
@@ -244,7 +251,7 @@ if ( !$force )
 }
 
 // Test for cases which do not operate by object
-if( $objectID == false )
+if( !$objectID && !$nodeID )
 {
     // Perform operastions for cases which do not operate by object
     if( $generate && !$remove )
@@ -272,7 +279,7 @@ if( $objectID == false )
         }
     }
 }
-elseif( $objectID != false )
+elseif( $objectID != false && !$nodeID )
 {
     // Test for cases which operate by object
     if( $generate && !$remove )
@@ -280,11 +287,11 @@ elseif( $objectID != false )
         // Alert the user to what is happening
         if( $dry && $generate )
         {
-            $headerActionMessage = "Dry run: Pretending to generate image alias image variation image files content object\n";
+            $headerActionMessage = "Dry run: Pretending to generate image alias image variation image files for a single content object\n";
         }
         else
         {
-            $headerActionMessage = "Generating image alias image variation image files for all content object\n";
+            $headerActionMessage = "Generating image alias image variation image files for a single content object\n";
         }
     }
     else
@@ -292,18 +299,62 @@ elseif( $objectID != false )
         // Alert the user to what is happening
         if( $dry && $remove )
         {
-            $headerActionMessage = "Dry run: Pretending to remove image alias image variation files for all content object\n";
+            $headerActionMessage = "Dry run: Pretending to remove image alias image variation files for a single content object\n";
         }
         else
         {
-            $headerActionMessage = "Removing image alias image variation files for all content object\n";
+            $headerActionMessage = "Removing image alias image variation files for a single content object\n";
+        }
+    }
+}
+elseif( $nodeID != false && !$objectID )
+{
+    // Test for cases which operate by object
+    if( $generate && !$remove )
+    {
+        // Alert the user to what is happening
+        if( $dry && $generate && !$subtreeChildren )
+        {
+            $headerActionMessage = "Dry run: Pretending to generate image alias image variation image files for a single content tree node\n";
+        }
+        elseif( $dry && $generate && $subtreeChildren )
+        {
+            $headerActionMessage = "Dry run: Pretending to generate image alias image variation image files for a single content tree node (and all subtree child nodes)\n";
+        }
+        elseif( !$dry && $generate && !$subtreeChildren )
+        {
+            $headerActionMessage = "Generating image alias image variation image files for a single content tree node\n";
+        }
+        elseif( !$dry && $generate && $subtreeChildren )
+        {
+            $headerActionMessage = "Generating image alias image variation image files for a single content tree node (and all subtree child nodes)\n";
+        }
+    }
+    else
+    {
+        // Alert the user to what is happening
+        if( $dry && $remove && !$subtreeChildren )
+        {
+            $headerActionMessage = "Dry run: Pretending to remove image alias image variation files for a single content tree node\n";
+        }
+        elseif( $dry && $remove && $subtreeChildren )
+        {
+            $headerActionMessage = "Dry run: Pretending to remove image alias image variation files for a single content tree node (and all subtree child nodes)\n";
+        }
+        elseif( !$dry && $remove && !$subtreeChildren )
+        {
+            $headerActionMessage = "Removing image alias image variation files for a single content tree node\n";
+        }
+        elseif( !$dry && $remove && $subtreeChildren )
+        {
+            $headerActionMessage = "Removing image alias image variation files for a single content tree node (and all subtree child nodes)\n";
         }
     }
 }
 $cli->output( $cli->stylize( 'header', $headerActionMessage ) );
 
 // Test for cases which do not operate by object
-if( $objectID == false )
+if( !$objectID && !$nodeID )
 {
     // Perform operastions for cases which do not operate by object
     if( $generate && !$remove )
@@ -314,10 +365,10 @@ if( $objectID == false )
     else
     {
         // Attempt to remove image alias variation files
-        $result = BCImageAlias::instance( $scriptExecutionOptions )->removeAllAliases( $contentObjectImageAttributes );
+        $result = BCImageAlias::instance( $scriptExecutionOptions )->removeByAttributes( $contentObjectImageAttributes );
     }
 }
-elseif( $objectID != false )
+elseif( $objectID != false && !$nodeID )
 {
     // Test for cases which operate by object
     if( $generate && !$remove )
@@ -331,9 +382,51 @@ elseif( $objectID != false )
         $result = BCImageAlias::instance( $scriptExecutionOptions )->removeByObject( $object );
     }
 }
+elseif( $nodeID != false && !$objectID )
+{
+    // Fetch the provided node
+    $node = eZContentObjectTreeNode::fetch( $nodeID );
+
+    if( is_object( $node ) )
+    {
+        // Test for cases which operate by node
+        if( $generate && !$remove && !$subtreeChildren )
+        {
+            // Attempt to generate image alias variations
+            $result = BCImageAlias::instance( $scriptExecutionOptions )->createByObject( $node->attribute( 'object' ) );
+        }
+        elseif( $generate && !$remove && $subtreeChildren )
+        {
+            // Subtree fetch parameters for the ordering of child nodes fetched to be processed
+            $subtreeParams = array(
+                                   'MainNodeOnly' => true,
+                                   'Depth' => 4,
+                                   'SortBy' => array( 'depth', true ) );
+
+            // Attempt to generate image alias variations
+            $result = BCImageAlias::instance( $scriptExecutionOptions )->createByNodeSubtree( $node, $subtreeParams );
+        }
+        elseif( $remove && !$generate && !$subtreeChildren )
+        {
+            // Attempt to remove image alias variation files
+            $result = BCImageAlias::instance( $scriptExecutionOptions )->removeByObject( $node->attribute( 'object' ) );
+        }
+        elseif( $remove && !$generate && $subtreeChildren )
+        {
+            // Subtree fetch parameters for the ordering of child nodes fetched to be processed
+            $subtreeParams = array(
+                                   'MainNodeOnly' => true,
+                                   'Depth' => 4,
+                                   'SortBy' => array( 'depth', true ) );
+
+            // Attempt to remove image alias variation files
+            $result = BCImageAlias::instance( $scriptExecutionOptions )->removeByNodeSubtree( $node, $subtreeParams );
+        }
+    }
+}
 
 // Test for cases which do not operate by object
-if( $objectID == false )
+if( !$objectID && !$nodeID )
 {
     // Perform operastions for cases which do not operate by object
     if( $generate && !$remove )
@@ -351,7 +444,7 @@ if( $objectID == false )
     else
     {
         // Alert the user to what has happened
-        if( $dry == true )
+        if( $dry )
         {
             $footerMessageSummary = ". No image alias variation image files deleted!\n";
         }
@@ -377,7 +470,7 @@ if( $objectID == false )
         }
     }
 }
-elseif( $objectID != false )
+elseif( $objectID != false || $nodeID != false )
 {
     // Test for cases which operate by object
     if( $generate && !$remove )
@@ -395,7 +488,7 @@ elseif( $objectID != false )
     else
     {
         // Alert the user to what has happened
-        if( $dry == true )
+        if( $dry )
         {
             $footerMessageSummary = ". No image alias variation image files deleted!\n";
         }

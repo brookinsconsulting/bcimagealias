@@ -2,7 +2,7 @@
 /**
  * File containing the BCImageAliasGenerateObjectImageVariationsType class.
  *
- * @copyright Copyright (C) 1999-2011 Brookins Consulting. All rights reserved.
+ * @copyright Copyright (C) 1999 - 2011 Brookins Consulting. All rights reserved.
  * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2 (or later)
  * @version //autogentag//
  * @package bcimagealias
@@ -49,6 +49,7 @@ class BCImageAliasGenerateObjectImageVariationsType extends eZWorkflowEventType
         $workflowEventForceGeneration = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventForceAliasImageVariationGeneration' ) == 'enabled' ? true : false;
         $workflowEventTroubleshootGeneration = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventTroubleshootAliasImageVariationGeneration' ) == 'enabled' ? true : false;
         $workflowEventCurrentSiteAccessGeneration = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventCurrentSiteAccessAliasImageVariationGeneration' ) == 'enabled' ? true : false;
+        $workflowEventSubtreeImageAliasGeneration = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventSubtreeImageAliasImageVariationGeneration' ) == 'enabled' ? true : false;
 
         /**
          * BCImageAlias execution parameters
@@ -87,7 +88,14 @@ class BCImageAliasGenerateObjectImageVariationsType extends eZWorkflowEventType
         /**
          * Generate image alias image variation image files by content object
          */
-        $result = BCImageAlias::instance( $BCImageAliasExecutionParams )->createByObject( $object );
+        if( $workflowEventSubtreeImageAliasGeneration )
+        {
+            $result = BCImageAlias::instance( $BCImageAliasExecutionParams )->createByNodeSubtree( $object->attribute( 'main_node' ) );
+        }
+        else
+        {
+            $result = BCImageAlias::instance( $BCImageAliasExecutionParams )->createByObject( $object );
+        }
 
         /**
          * Optional debug output

@@ -17,9 +17,7 @@ Features for consideration:
 
 - Regenerating specific image alias's image variation image files alone
 - Regenerating image alias's image variation image files of only
-  a specific subtree of the content object tree node content tree
-- Remove image alias's image variation image files of non-published
-  versions to reduce disk usage.
+  a specific content tree subtree (including child nodes)
 - Different debug options
 - Logging options
 - Any other changes not mentioned here 

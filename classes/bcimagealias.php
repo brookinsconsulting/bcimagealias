@@ -96,6 +96,214 @@ class BCImageAlias {
     }
 
     /**
+     * Create if alias variation does not exist for content object and main node subtree children
+     *
+     * @param object $node Object of class ezcontentobjecttreenode. Required
+     * @param array $subtreeParams Array containing the the subtree fetch parameters. Optional.
+     * Defaults to array( 'MainNodeOnly' => true, 'Depth' => 4, 'SortBy' => array( 'depth', true ) )
+     * See the docs.ez.no content/list fetch function parameter documentation for a reference of supported parameters and syntax.
+     * Remember PHP parameter syntax is used not template syntax. Use docs as a guide for general guide but not an exact api reference.
+     *
+     * @return bool true if any image alias generation is called, false if not
+     * @static
+     */
+    static function createByNodeSubtree( $node = false, $subtreeParams = array() )
+    {
+        if ( !$node )
+        {
+            return false;
+        }
+
+        // Fetch execution options
+        $executionOptions = self::executionOptions();
+        $results = array();
+        $objects = array();
+
+        // Define subtree parameter defaults
+        if( is_array( $subtreeParams ) && empty( $subtreeParams ) )
+        {
+            // With no parameters provided we define helpful defaults
+            $subtreeParams = array_merge( $subtreeParams, array(
+                                          'MainNodeOnly' => true,
+                                          'Depth' => 4,
+                                          'SortBy' => array( 'depth', true ) ) );
+        }
+
+        // Fetch node details and subtree children
+        $nodeObject = $node->attribute( 'object' );
+        $nodeObjectID = $nodeObject->attribute( 'id' );
+        $nodeChildren = $node->subtree( $subtreeParams );
+
+        // Add node object to array of nodes to process
+        $objects[ $nodeObjectID ] = $nodeObject;
+
+        // Iterate over node subtree child nodes
+        foreach( $nodeChildren as $nodeChild )
+        {
+            $nodeChildObject = $nodeChild->attribute( 'object' );
+            $nodeChildObjectID = $nodeChildObject->attribute( 'id' );
+
+            // Test to ensure we only add content object once to array of nodes to process
+            if( !isset( $objects[ $nodeChildObjectID ] ) )
+            {
+                // Add node object to array of nodes to process
+                $objects[ $nodeChildObjectID ] = $nodeChildObject;
+            }
+        }
+
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'troubleshootLevel' ] >= 2 )
+        {
+            self::displayMessage( 'Subtree node objects:', "\n\n" );
+            print_r( $objects ); self::displayMessage( '', "\n\n" );
+        }
+
+        // Iterate over object attributes
+        foreach ( $objects as $key => $contentObject )
+        {
+            // Test to ensure only objects are used
+            if ( is_object( $contentObject ) )
+            {
+                // Trigger the image alias variation generation
+                $results[ $key ] = self::createByObject( $contentObject );
+            }
+            else
+            {
+                $results[ $key ] = false;
+            }
+        }
+
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'iterate' ] == false )
+        {
+            self::displayMessage( 'Here are the content object image attribute generation attempt results', "\n\n" );            
+            self::displayMessage( 'True will show up as a 1. Theses results do not affect method completion as image aliases will not always be generated' );
+            print_r( $results ); self::displayMessage( '', "\n");
+        }
+
+        // Calculate return results based on execution options and results comparison
+        if( in_array( true, $results ) && count( $objects ) == count( $results ) )
+        {
+            // Iterate over the objects again based on results
+            foreach( $objects as $key => $nodeContentObject )
+            {
+                // Only clear cache if we generate aliases successfully
+                if( $results[ $key ] == true )
+                {
+                    eZContentCacheManager::clearContentCacheIfNeeded( $nodeContentObject->attribute( 'id' ) );
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Remove if alias variation does exist for content object and main node subtree children
+     *
+     * @param object $node Object of class ezcontentobjecttreenode. Required
+     * @param array $subtreeParams Array containing the the subtree fetch parameters. Optional.
+     * Defaults to array( 'MainNodeOnly' => true, 'Depth' => 4, 'SortBy' => array( 'depth', true ) )
+     * See the docs.ez.no content/list fetch function parameter documentation for a reference of supported parameters and syntax.
+     * Remember PHP parameter syntax is used not template syntax. Use docs as a guide for general guide but not an exact api reference.
+     *
+     * @return bool true if any image alias generation is called, false if not
+     * @static
+     */
+    static function removeByNodeSubtree( $node = false, $subtreeParams = array() )
+    {
+        if ( !$node )
+        {
+            return false;
+        }
+
+        // Fetch execution options
+        $executionOptions = self::executionOptions();
+        $results = array();
+        $objects = array();
+
+        // Define subtree parameter defaults
+        if( is_array( $subtreeParams ) && empty( $subtreeParams ) )
+        {
+            // With no parameters provided we define helpful defaults
+            $subtreeParams = array_merge( $subtreeParams, array(
+                                          'MainNodeOnly' => true,
+                                          'Depth' => 4,
+                                          'SortBy' => array( 'depth', true ) ) );
+        }
+
+        // Fetch node details and subtree children
+        $nodeObject = $node->attribute( 'object' );
+        $nodeObjectID = $nodeObject->attribute( 'id' );
+        $nodeChildren = $node->subtree( $subtreeParams );
+
+        // Add node object to array of nodes to process
+        $objects[ $nodeObjectID ] = $nodeObject;
+
+        // Iterate over node subtree child nodes
+        foreach( $nodeChildren as $nodeChild )
+        {
+            $nodeChildObject = $nodeChild->attribute( 'object' );
+            $nodeChildObjectID = $nodeChildObject->attribute( 'id' );
+
+            // Test to ensure we only add content object once to array of nodes to process
+            if( !isset( $objects[ $nodeChildObjectID ] ) )
+            {
+                // Add node object to array of nodes to process
+                $objects[ $nodeChildObjectID ] = $nodeChildObject;
+            }
+        }
+
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'troubleshootLevel' ] >= 2 )
+        {
+            self::displayMessage( 'Subtree node objects:', "\n\n" );
+            print_r( $objects ); self::displayMessage( '', "\n\n" );
+        }
+
+        // Iterate over object attributes
+        foreach ( $objects as $contentObject )
+        {
+            // Test to ensure only objects are used
+            if ( is_object( $contentObject ) )
+            {
+                // Trigger the image alias variation generation
+                $results[] = self::removeByObject( $contentObject );
+            }
+            else
+            {
+                $results[] = false;
+            }
+        }
+
+        // Optional debug output
+        if( $executionOptions[ 'troubleshoot' ] == true && $executionOptions[ 'iterate' ] == false )
+        {
+            self::displayMessage( 'Here are the content object image attribute removal attempt results', "\n\n" );            
+            self::displayMessage( 'True will show up as a 1. Theses results do not affect method completion as image aliases will not always be generated before you try to remove them' );
+            print_r( $results ); self::displayMessage( '', "\n");
+        }
+
+        // Calculate return results based on execution options and results comparison
+        if( in_array( true, $results ) && count( $objects ) == count( $results ) )
+        {
+            // Iterate over the objects again based on results
+            foreach( $objects as $key => $nodeContentObject )
+            {
+                // Only clear cache if we generate aliases successfully
+                if( $results[ $key ] == true )
+                {
+                    eZContentCacheManager::clearContentCacheIfNeeded( $nodeContentObject->attribute( 'id' ) );
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Create if alias variation does not exist by content object
      *
      * @param object $object Object of class ezcontentobject. Required
@@ -130,7 +338,6 @@ class BCImageAlias {
                            $contentClassImageAttributesArray ) )
             {
                 // Trigger the image alias variation generation
-
                 $results[] = self::createByAttribute( $contentObjectAttribute );
             }
             else
@@ -193,7 +400,7 @@ class BCImageAlias {
             {
                 // Trigger the image alias variation generation
 
-                $results[] = self::removeAllAliasesByAttribute( $contentObjectAttribute );
+                $results[] = self::removeByAttribute( $contentObjectAttribute );
             }
             else
             {
@@ -379,7 +586,7 @@ class BCImageAlias {
             self::displayMessage( 'Number of ini image aliases: ' . count( $aliases ), "\n\n" );
         }
 
-        // Initializse alias foreach counter at one, 1
+        // Initialize alias foreach counter at one, 1
         $aliasCounter = 1;
 
         // Iterate through image alias list from settings
@@ -405,7 +612,7 @@ class BCImageAlias {
                 // Optional debug output
                 if( $executionOptions[ 'troubleshoot' ] == true )
                 {
-                    self::displayMessage( "\neZImageManger claims: $alias does not exist in system", "\n\n" );
+                    self::displayMessage( "\n" . 'eZImageManger claims: ' . '"' . $alias . '"' . ' does not exist in system', "\n\n" );
                 }
                 continue;
             }
@@ -424,8 +631,7 @@ class BCImageAlias {
                 if( $executionOptions[ 'troubleshoot' ] == true )
                 {
                     // Alert user of dry alias calculation
-                    $message = "Dry run: Calculating generation of datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $alias .
-                               " image variation " . "\n";
+                    $message = "Dry run: Calculating generation of datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias "  . '"' . $alias  . '"' . ' image variation' . "\n";
 
                     self::displayMessage( $message );
                 }
@@ -480,7 +686,6 @@ class BCImageAlias {
 
             foreach ( $aliasList as $aliasKey => $aliasListItem )
             {
-            
                 // Test for newly added alias
                 // if ( ( !isset( $aliasListItem['is_new'] ) or $aliasListItem['is_new'] == '' ) && $executionOptions[ 'force' ] == true )
                 if ( $executionOptions[ 'force' ] == true )
@@ -516,7 +721,7 @@ class BCImageAlias {
                 if ( isset( $result[ $aliasKey ] ) && $result[ $aliasKey ] == true )
                 {
                     $results[] = true;
-                    $message = "Generated datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . $aliasListItem['name'] .
+                    $message = "Generated datatype " . $contentObjectAttribute->attribute( 'data_type_string' ) . "type image alias " . '"' . $aliasListItem['name'] . '"' .
                                " image variation " . $aliasListItem['url'];
 
                     self::scriptIterate( $message );
@@ -674,7 +879,7 @@ class BCImageAlias {
      * @return bool true if succcesfull, false otherwise
      * @static
      */
-    static function removeAllAliases( $contentObjectAttributes = false )
+    static function removeByAttributes( $contentObjectAttributes = false )
     {
         if ( !is_array( $contentObjectAttributes ) )
         {
@@ -718,7 +923,7 @@ class BCImageAlias {
                 }
             }
 
-            $results[] = self::removeAllAliasesByAttribute( $contentObjectAttribute );
+            $results[] = self::removeByAttribute( $contentObjectAttribute );
         }
 
         // Calculate return results based on execution options and results comparison
@@ -736,7 +941,7 @@ class BCImageAlias {
      * @return bool true if succcesfull, false otherwise
      * @static
      */
-    static function removeAllAliasesByAttribute( $contentObjectAttribute = false )
+    static function removeByAttribute( $contentObjectAttribute = false )
     {
         if ( !is_object( $contentObjectAttribute ) )
         {
@@ -919,6 +1124,7 @@ class BCImageAlias {
     static function scriptIterate( $message = '', $newlines = "\n" )
     {
         $executionOptions = self::executionOptions();
+
         if( isset( $_SERVER['argv'] ) && $executionOptions[ 'iterate' ] )
         {
             if( $message != '' )
@@ -933,11 +1139,6 @@ class BCImageAlias {
 
                     // Iterate script, Alert the user to what is happening at the moment
                     $script->iterate( $cli, true, $message . $newlines );
-
-                    /* if( $executionOptions[ 'verbose' ] )
-                    {
-                        self::displayMessage( '', "\n\n");
-                    } */
                 }
                 else
                 {
@@ -963,8 +1164,8 @@ class BCImageAlias {
      */
     static function displayMessage( $message = '', $newline = "\n" )
     {
-
         $executionOptions = self::executionOptions();
+
         if( isset( $_SERVER['argv'] ) )
         {
             if( isset( $message ) )

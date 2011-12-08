@@ -1,0 +1,14 @@
+CHANGELOG 0.0.23
+
+- Added: Changelog for 0.0.23 in doc/changelogs/CHANGELOG-0.0.23
+- Added: Added doc/USAGE
+- Added: Added bcimagealiasremove cronjob part, related settings and usage documentation
+- Updated: Changed extension version to 0.0.23
+- Updated: Minor extension.xml sources url typo change
+- Updated: Moved usage documentation out into it's own file doc/USAGE
+- Updated: Added --node-id and --subtree-children parameters to bcimagealias.php script. Added support to generate/remove all/one content tree node image aliases
+- Updated: Added BCImageAlias class support to generate content tree node image aliases
+- Updated: Added workflow event and related settings to generate content tree node (and child node subtree) image aliases
+- Updated: Renamed BCImageAlias methods 'removeAllAliasesByAttribute' to 'removeByAttribute' and 'removeAllAliases' to 'removeByAttributes' for clarity and consistency
+- Removed: Removed incomplete and deprecated workflow event
+
