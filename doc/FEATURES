@@ -1,49 +1,52 @@
 BC Image Alias extension FEATURES
 
-1) BC Image Alias extension Features
+1) BC Image Alias extension features available and related sources
 
 The bcimagealias extension provides the following features and supported apis
 
    - BCImageAlias eZ Publish extension PHP Class, Creates, Regenerates,
      Removes image alias image variation image files for eZ Publish
-   -- See: classes/
+   -- See related sources: classes/
 
    - bcimagealias eZ Publish extension PHP Scripts, Creates, Regenerates,
      Removes image alias image variation image files for eZ Publish
-   -- See: bin/php/
+   -- See related sources: bin/php/
 
    - bcimagealias eZ Publish extension PHP Cronjob parts, Creates,
      Removes image alias image variation image files for eZ Publish
-   -- See: cronjobs/
+   -- See related sources: cronjobs/
 
    - bcimagealias eZ Publish extension PHP Module views, Creates, Regenerates,
      Removes image alias image variation image files for eZ Publish
-   -- See: modules/bcimagealias/
+   -- See related sources: modules/bcimagealias/
 
    - bcimagealias eZ Publish extension PHP workflow event, Creates, Regenerates
      image alias image variation image files for eZ Publish
-   -- See: eventtypes/
+   -- See related sources: eventtypes/
 
    - bcimagealias eZ Publish extension PHP kernel class override for eZ Publish
-   -- See: kernel/
+   -- See related sources: kernel/
 
    - bcimagealias eZ Publish extension PHP lib class override for eZ Publish
-   -- See: lib/
+   -- See related sources: lib/
 
    - bcimagealias eZ Publish extension design override 'standard' for eZ Publish
-   -- See: design/standard/
+   -- See related sources: design/standard/
 
    - bcimagealias eZ Publish extension design override templates for content structure and popup class menus for eZ Publish admin siteaccess
-   -- See: design/standard/templates/
+   -- See related sources: design/standard/templates/
 
    - bcimagealias eZ Publish extension translations for 'untranslated', 'eng-GB' and 'eng-US' in eZ Publish
-   -- See: translations/
+   -- See related sources: translations/
 
 
 2) BC Image Alias extension eZ Publish api feature usage
 
 The bcimagealias extension makes use of the following eZ Publish features and supported apis
 
+   - eZ Publish PHP classes
+   - eZ Publish eZContentObjectAttribute object content
+   - eZ Publish var directory storage image alias content
    - eZ Publish extension
    - eZ Publish extension classes
    - eZ Publish extension bin/php scripts

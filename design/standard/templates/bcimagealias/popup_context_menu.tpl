@@ -1,3 +1,13 @@
+{def $current_user_context_menu=fetch( 'user', 'current_user' )
+     $bcimagealias_function_access_create=fetch( 'user', 'has_access_to',
+                                                 hash( 'module',   'bcimagealias',
+                                                       'function', 'create',
+                                                       'user_id',  $current_user_context_menu.contentobject_id ) )
+     $bcimagealias_function_access_remove=fetch( 'user', 'has_access_to',
+                                                 hash( 'module',   'bcimagealias',
+                                                       'function', 'remove',
+                                                       'user_id',  $current_user_context_menu.contentobject_id ) )}
+{if or( $bcimagealias_function_access_create, $bcimagealias_function_access_remove )}
 <script type="text/javascript">
 menuArray['BCImageAlias'] = [];
 menuArray['BCImageAlias']['depth'] = 1;
@@ -6,7 +16,9 @@ menuArray['BCImageAlias']['elements'] = [];
 
 <hr />
 <a id="menu-bcimagealias" class="more" href="#" onmouseover="ezpopmenu_showSubLevel( event, 'BCImageAlias', 'menu-bcimagealias' ); return false;">{'Image variations'|i18n( 'extension/bcimagealias/popupmenu' )}</a>
+{/if}
 
+{if $bcimagealias_function_access_create}
 {* Create current siteacess node aliases *}
 <form id="menu-form-contextmenu-createcurrentsiteaccessnodealiases" method="post" action={"/bcimagealias/create"|ezurl}>
   <input type="hidden" name="ContentObjectID" value="%objectID%" />
@@ -94,8 +106,9 @@ menuArray['BCImageAlias']['elements'] = [];
   <input type="hidden" name="CreateNodeAliases" value="x" />
   <input type="hidden" name="CurrentURL" value="%currentURL%" />
 </form>
+{/if}
 
-
+{if $bcimagealias_function_access_remove}
 {* Remove current siteacess node aliases *}
 <form id="menu-form-contextmenu-removecurrentsiteaccessnodealiases" method="post" action={"/bcimagealias/remove"|ezurl}>
   <input type="hidden" name="ContentObjectID" value="%objectID%" />
@@ -139,4 +152,4 @@ menuArray['BCImageAlias']['elements'] = [];
   <input type="hidden" name="RemoveNodeAliases" value="x" />
   <input type="hidden" name="CurrentURL" value="%currentURL%" />
 </form>
-
+{/if}

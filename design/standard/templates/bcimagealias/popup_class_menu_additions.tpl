@@ -1,9 +1,25 @@
+{def $current_user_popup_class_menu_additions=fetch( 'user', 'current_user' )
+     $bcimagealias_function_access_create=fetch( 'user', 'has_access_to',
+                                                 hash( 'module',   'bcimagealias',
+                                                       'function', 'create',
+                                                       'user_id',  $current_user_popup_class_menu_additions.contentobject_id ) )
+     $bcimagealias_function_access_remove=fetch( 'user', 'has_access_to',
+                                                 hash( 'module',   'bcimagealias',
+                                                       'function', 'remove',
+                                                       'user_id',  $current_user_popup_class_menu_additions.contentobject_id ) )}
+{if or( $bcimagealias_function_access_create, $bcimagealias_function_access_remove )}
 <hr />
+{/if}
 
+{if $bcimagealias_function_access_create}
 <a id="bcimage-alias-create-by-node-menu-view" class="more" href="#" onmouseover="ezpopmenu_hide('BCImageAliasRemoveByNode'); ezpopmenu_showSubLevel( event, 'BCImageAliasCreateByNode', 'bcimage-alias-create-by-node-menu-view' ); return false;">{"Create image variations"|i18n("extension/bcimagealias/popupmenu")}</a>
+{/if}
 
+{if $bcimagealias_function_access_remove}
 <a id="bcimage-alias-remove-by-node-menu-view" class="more" href="#" onmouseover="ezpopmenu_hide('BCImageAliasCreateByNode'); ezpopmenu_showSubLevel( event, 'BCImageAliasRemoveByNode', 'bcimage-alias-remove-by-node-menu-view' ); return false;">{"Remove image variations"|i18n("extension/bcimagealias/popupmenu")}</a>
+{/if}
 
+{if $bcimagealias_function_access_create}
 {* Create current siteacess node aliases *}
 <form id="menu-form-createcurrentsiteaccessnodealiases" method="post" action={"/bcimagealias/create"|ezurl}>
   <input type="hidden" name="ContentObjectID" value="%objectID%" />
@@ -83,8 +99,9 @@
   <input type="hidden" name="CurrentSiteaccess" value="false" />
   <input type="hidden" name="CreateNodeAliases" value="x" />
 </form>
+{/if}
 
-
+{if $bcimagealias_function_access_remove}
 {* Remove current siteacess node aliases *}
 <form id="menu-form-removecurrentsiteaccessnodealiases" method="post" action={"/bcimagealias/remove"|ezurl}>
   <input type="hidden" name="ContentObjectID" value="%objectID%" />
@@ -124,4 +141,4 @@
   <input type="hidden" name="CurrentSiteaccess" value="true" />
   <input type="hidden" name="RemoveNodeAliases" value="x" />
 </form>
-
+{/if}

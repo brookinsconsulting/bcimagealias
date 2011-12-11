@@ -1,0 +1,42 @@
+BC Image Alias extension USECASES
+
+1) Initial creation, regeneration and removal of all image aliases, for all image attributes, for all objects, of all nodes
+
+   We suggest the admin siteaccess content structure menu and popup class menu links which you can run on demand as needed
+
+   Alternatively we suggest the command line script bcimagealias.php which you can run on demand as needed
+
+2) Regular automated image alias creation/regeneration for all image attribute image aliases, for all siteaccesses, after node is published
+
+   Note: before nodes are published is not supported
+
+   We suggest the workflow event which you can configure to create and regenerate image attribute image aliases, for all siteaccesses, after node is published
+
+3) Regular automated image alias removal for all image attribute image aliases
+
+   We suggest the cronjob part bcimagealiasremove which you can run on demand or via cron / crontabs
+
+4) Regular automated image alias creation for all image attribute image aliases
+
+   We suggest the cronjob part bcimagealiascreate which you can run on demand or via cron / crontabs
+
+5) Regular automated image alias regeneration for all image attribute image aliases
+
+   We suggest the cronjob part bcimagealiasregenerate which you can run on demand or via cron / crontabs
+
+6) Regular http post request module view to create, regenerate and remove all image attribute image aliases image variation image files protected by eZ Publish role policy permissions
+
+   We suggest the bcimagealias module views 'create' and 'remove' which you can run on demand, via cron / crontabs or using some other web service
+
+7) Custom eZ Publish based PHP class which can perform the image alias image variation image file creation, regeneration and removal for all image attribute image aliases
+
+   We suggest the using the BCImageAlias PHP Class which provides the core functionality used by this extension.
+
+   We suggest reviewing the bcimagealias.php PHP script (which provides access to features of BCImageAlias PHP Class)
+
+   We suggest reviewing the bcimagealiascreateobjectimagevariationstype.php PHP class eZ Publish workflow event (which provides access to features of BCImageAlias PHP Class)
+
+   We suggest reviewing the bcimagealias/create.php PHP eZ Publish module view (which provides access to features of BCImageAlias PHP Class)
+
+   We suggest reviewing the bcimagealias/remove.php PHP eZ Publish module view (which provides access to features of BCImageAlias PHP Class)
+

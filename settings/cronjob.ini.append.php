@@ -7,6 +7,9 @@ ExtensionDirectories[]=bcimagealias
 Scripts[]
 Scripts[]=bcimagealiascreate.php
 
+[CronjobPart-bcimagealiasregenerate]
+Scripts[]
+Scripts[]=bcimagealiasregenerate.php
 
 [CronjobPart-bcimagealiasremove]
 Scripts[]

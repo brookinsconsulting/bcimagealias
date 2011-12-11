@@ -105,7 +105,7 @@ Also there were issues with the changes introduce in 2011.09 build later resolve
 
 You should check your role permissions. Do you have the required role policy permissions 'create' and/or 'remove'? Are you certain your user is actually in your user role definitions?
 
-Please re-read doc/INSTALL #9
+Please re-read doc/INSTALL #10
 
 
 8) Current siteaccess related siteaccesses image.ini.append.php image aliases image variation image files are not being created
@@ -114,7 +114,7 @@ You should check your siteaccess settings, script parameters / module view param
 
 Do you have the required kernel override autoloads correctly generated. Are all files within the bcimagealias extension readable by the webserver?
 
-Please re-read doc/INSTALL #6 and #6.3
+Please re-read doc/INSTALL #7, #7.2 and #7.3
 
 
 9) Use of eZContentBrowse::browse functionality

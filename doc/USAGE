@@ -149,7 +149,7 @@ Then click on the action you wish to use.
 
 You will be redirected to the node you selected upon completion.
 
-If you get a role permission error you may have skipped the required role policy rule addition steps in doc/INSTALL
+If you get a role permission error you may have skipped the required role policy rule addition steps in doc/INSTALL #10.1
 
 
 5. Extension module view direct access usage examples
@@ -182,43 +182,43 @@ Here are some real life example usage of the module views urls
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true
 
-5.4.1 Regenerate image aliases by NodeID (Create subtree children, Current siteaccess)
+5.4.2 Regenerate image aliases by NodeID (Create subtree children, Current siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true/true
 
-5.4.1 Regenerate image aliases by NodeID (Create subtree children, Related siteaccess)
+5.4.3 Regenerate image aliases by NodeID (Create subtree children, Related siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true/false
 
-5.4.1 Create image aliases by NodeID (Current siteaccess)
+5.4.4 Create image aliases by NodeID (Current siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/false
 
-5.4.1 Create image aliases by NodeID (Create subtree children, Related siteaccess)
+5.4.5 Create image aliases by NodeID (Create subtree children, Related siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/false/false
 
-5.4.1 Create image aliases by NodeID (Create subtree children, Current siteaccess)
+5.4.6 Create image aliases by NodeID (Create subtree children, Current siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/false/true
 
-5.4.1 Create image aliases by NodeID (Do not create subtree children, Current siteaccess)
+5.4.7 Create image aliases by NodeID (Do not create subtree children, Current siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/false
 
-5.4.1 Create image aliases by NodeID (Do not create subtree children, Current siteaccess)
+5.4.8 Create image aliases by NodeID (Do not create subtree children, Current siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/false/true
 
-5.4.1 Create image aliases by NodeID (Do not create subtree children, Related siteaccess)
+5.4.9 Create image aliases by NodeID (Do not create subtree children, Related siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/false/false
 
-5.4.1 Regenerate image aliases by NodeID (Do not create subtree children, Current siteaccess)
+5.4.10 Regenerate image aliases by NodeID (Do not create subtree children, Current siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/true/true
 
-5.4.1 Regenerate image aliases by NodeID (Do not create subtree children, Related siteaccess)
+5.4.11 Regenerate image aliases by NodeID (Do not create subtree children, Related siteaccess)
 
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/true/false
 
@@ -268,7 +268,15 @@ Detailed directions on installing and configuring the workflow event and trigger
 
 7. Cronjob part usage
 
-The create cronjob part
+You can read the following eZ Publish Cronjob documentation on how to run cronjob part scripts and how to configure crontab to run cronjob part scripts.
+
+Running eZ Publish Cronjob part scripts, http://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/Cronjobs/Running-cronjobs
+http://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/Cronjobs/Running-cronjobs#eztoc86298_1
+
+Crontab configuration guide, http://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/Cronjobs/Running-cronjobs#eztoc86298_2
+
+
+7.1 The create cronjob part
 
 This script will create and remove all possible image alias variation image files each time it is executed.
 
@@ -278,10 +286,21 @@ cd /path/to/ezpublish/;
 
 php ./runcronjobs.php bcimagealiascreate
 
+
+7.2 The regenerate cronjob part
+
+or you can schedule regeneration of all image alias variation image files in the system.
+
+cd /path/to/ezpublish/;
+
+php ./runcronjobs.php bcimagealiasregenerate
+
+
+7.3 The remove cronjob part
+
 or you can schedule removal of all image alias variation image files in the system.
 
 cd /path/to/ezpublish/;
 
 php ./runcronjobs.php bcimagealiasremove
-
 

@@ -5,8 +5,10 @@ What is the BC ImageAlias extension?
 
 BC ImageAlias is a true eZ Publish extension
 that provides commandline script, workflow event,
-class methods and admin menu items to create, remove
-and regenerate content object image alias variations.
+cronjob parts, class methods, module views and
+admin siteaccess content structure menu items to
+create, remove and regenerate content object
+image alias variations.
 
 
 BC ImageAlias version
@@ -53,6 +55,12 @@ Features
 ============
 
 The complete extension features documentation is included in the file doc/FEATURES.
+
+
+Use Cases
+============
+
+The complete extension usage documentation is included in the file doc/USECASES.
 
 
 Usage

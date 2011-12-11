@@ -3,15 +3,17 @@ CHANGELOG 0.0.23
 - Added: Changelog for 0.0.23 in doc/changelogs/CHANGELOG-0.0.23
 - Added: Added doc/USAGE
 - Added: Added bcimagealiasremove cronjob part, related settings and usage documentation
+- Added: Added bcimagealiasregenerate cronjob part, related settings and usage documentation
 - Added: Added extension admininterface contextmenu and submenu template settings overrides 
-- Added: Added Design 'standard' template overrides of content structure and class popup menus
-- Added: Added Script 'bcimagealias' optional parameters '--classes', '--attributes' and '--aliases'
-- Added: Added Module 'bcimagealias' with module views 'create' and 'remove'
-- Added: Added Module 'bcimagealias' module view function role policies 'create' and 'remove' to provide module view security restrictions by default
+- Added: Added design 'standard' template overrides of content structure and class popup menus
+- Added: Added script 'bcimagealias' optional parameters '--classes', '--attributes' and '--aliases'
+- Added: Added module 'bcimagealias' with module views 'create' and 'remove'
+- Added: Added module 'bcimagealias' module view function role policies 'create' and 'remove' to provide module view security restrictions by default
 - Added: Added extension translations for most template strings in 'untranslated', 'eng-US' and 'eng-GB' translation files
 - Updated: Changed extension version to 0.0.23
 - Updated: Minor extension.xml sources url typo change
 - Updated: Moved usage documentation out into it's own file doc/USAGE
+- Updated: Added has_access_to fetch for bcimagealias create function user access menu display switches in design 'standard' template overrides of content structure and class popup menus
 - Updated: Added --node-id and --subtree-children parameters to bcimagealias.php script. Added support to create/remove all/one content tree node image aliases
 - Updated: Added BCImageAlias class support to create content tree node image aliases
 - Updated: Added workflow event and related settings to create content tree node (and child node subtree) image aliases

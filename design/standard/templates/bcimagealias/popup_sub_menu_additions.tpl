@@ -1,3 +1,13 @@
+{def $current_user_popup_sub_menu_additions=fetch( 'user', 'current_user' )
+     $bcimagealias_function_access_create=fetch( 'user', 'has_access_to',
+                                                 hash( 'module',   'bcimagealias',
+                                                       'function', 'create',
+                                                       'user_id',  $current_user_popup_sub_menu_additions.contentobject_id ) )
+     $bcimagealias_function_access_remove=fetch( 'user', 'has_access_to',
+                                                 hash( 'module',   'bcimagealias',
+                                                       'function', 'remove',
+                                                       'user_id',  $current_user_popup_sub_menu_additions.contentobject_id ) )}
+{if or( $bcimagealias_function_access_create, $bcimagealias_function_access_remove )}
 <!-- Site access for override by node popup menu -->
 <script type="text/javascript">
 <!--
@@ -53,7 +63,9 @@ menuArray['BCImageAlias'] = {ldelim} 'depth': 1 {rdelim};
     <a id="menu-bcimagealias-removerelatedsiteaccessnodesubtreealiases" href="#"
        onclick="ezpopmenu_submitForm( 'menu-form-contextmenu-removerelatedsiteaccessnodesubtreealiases' ); return false;">{"Remove by related siteaccess"|i18n("extension/bcimagealias/popupmenu")}</a>
 </div>
+{/if}
 
+{if $bcimagealias_function_access_create}
 <!-- Site access for override by node popup menu -->
 <script type="text/javascript">
 <!--
@@ -93,7 +105,9 @@ menuArray['BCImageAliasCreateByNode'] = {ldelim} 'depth': 1 {rdelim};
     <a id="class-regeneraterelatedsiteaccessnodesubtreealiases" href="#"
        onclick="ezpopmenu_submitForm( 'menu-form-createrelatedsiteaccessnodesubtreealiases' ); return false;">{"Regenerate related siteaccess"|i18n("extension/bcimagealias/popupmenu")}</a>
 </div>
+{/if}
 
+{if $bcimagealias_function_access_remove}
 <script type="text/javascript">
 <!--
 menuArray['BCImageAliasRemoveByNode'] = {ldelim} 'depth': 1 {rdelim};
@@ -116,4 +130,4 @@ menuArray['BCImageAliasRemoveByNode'] = {ldelim} 'depth': 1 {rdelim};
     <a id="class-removerelatedsiteaccessnodesubtreealiases" href="#"
        onclick="ezpopmenu_submitForm( 'menu-form-removerelatedsiteaccessnodesubtreealiases' ); return false;">{"Remove by related siteaccess"|i18n("extension/bcimagealias/popupmenu")}</a>
 </div>
-
+{/if}
