@@ -15,9 +15,7 @@ please contact info@brookinsconsulting.com
 
 Features for consideration:
 
-- Regenerating specific image alias's image variation image files alone
-- Regenerating image alias's image variation image files of only
-  a specific content tree subtree (including child nodes)
+- Regenerating specific image attribute and specific image alias's image variation image files directly (script, admin-submenu, php class)
 - Different debug options
 - Logging options
 - Any other changes not mentioned here 

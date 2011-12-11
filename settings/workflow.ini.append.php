@@ -2,6 +2,6 @@
 
 [EventSettings]
 ExtensionDirectories[]=bcimagealias
-AvailableEventTypes[]=event_bcimagealiasgenerateobjectimagevariations
+AvailableEventTypes[]=event_bcimagealiascreateobjectimagevariations
 
 */ ?>

@@ -13,19 +13,22 @@ ImageDataTypeStringList[]=ezimage
 # ImageDataTypeStringList[]=ezprofileimage
 # ImageDataTypeStringList[]=ezimageextended
 
-# Generate all image alias image variation image files for all image aliases not just variations which which do not yet exist.
-# WorkflowEventForceAliasImageVariationGeneration=enabled
-WorkflowEventForceAliasImageVariationGeneration=disabled
+# Regenerate all image alias image variation image files for all image aliases not just variations which which do not yet exist.
+# WorkflowEventRegenerateAliasImageVariations=enabled
+WorkflowEventRegenerateAliasImageVariations=disabled
 
 # End WorkflowEvent execution fatally to allow developer to review execution troubleshooting output. Enables display of execution troubleshooting output.
-# WorkflowEventTroubleshootAliasImageVariationGeneration=enabled
-WorkflowEventTroubleshootAliasImageVariationGeneration=disabled
+# WorkflowEventTroubleshootAliasImageVariationCreation=enabled
+WorkflowEventTroubleshootAliasImageVariationCreation=disabled
 
-# Generate all image alias image variations for current siteaccess (if set to 'enabled')
-# Generate all image alias image variations for all related siteaccesses (if set to 'disabled')
-WorkflowEventCurrentSiteAccessAliasImageVariationGeneration=disabled
+# Workflow verbose execution level setting. Use only with above setting enabled, otherwise ignored. Values supported are 1, 2, 3, 4, 5
+WorkflowEventTroubleshootAliasImageVariationCreationLevel=1
 
-# Generate all image aliases under object main node and all child nodes
-WorkflowEventSubtreeImageAliasImageVariationGeneration=enabled
+# Create all image alias image variations for current siteaccess (if set to 'enabled')
+# Create all image alias image variations for all related siteaccesses (if set to 'disabled')
+WorkflowEventCurrentSiteAccessAliasImageVariationCreation=disabled
+
+# Create all image aliases under object main node and all child nodes
+WorkflowEventSubtreeImageAliasImageVariationCreation=enabled
 
 */ ?>

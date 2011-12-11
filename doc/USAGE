@@ -5,67 +5,92 @@ BC ImageAlias extension USAGE
 
 Use --help option to review available command line options:
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate --help
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create --help
 
 
-1.1 The generation command line script options --generate, --node-id and --subtree-children generate all image aliases of images used throughout the entire content tree starting with the node-id provided
+1.1 The generation command line script options --create, --node-id and --subtree-children create all image aliases of images used throughout the entire content tree starting with the node-id provided
 
-Command line usage which generates image aliases of the object which the node-id passed is specified and all node objects in the content tree with a parent-id of the node-id passed. Default depth is 5 levels deep (fyi)
+Command line usage which creates image aliases of the object which the node-id passed is specified and all node objects in the content tree with a parent-id of the node-id passed. Default depth is 5 levels deep (fyi)
 
 Root node: The 'Home' content tree node. This is the command most users will very likely want to run first when using this extension for the first time.
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --subtree-children --node-id=2
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=2
 
-Root node: The 'Media' content tree node. Note this will normally generate image aliases as even the default installation provides / stores image content here for reuse site wide.
+Root node: The 'Media' content tree node. Note this will normally create image aliases as even the default installation provides / stores image content here for reuse site wide.
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --subtree-children --node-id=43
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=43
 
-Root node: The 'Users' content tree node. Note that this may not generate aliases if your using a default installation of eZ or your users do not use this feature directly.
+Root node: The 'Users' content tree node. Note that this may not create aliases if your using a default installation of eZ or your users do not use this feature directly.
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --subtree-children --node-id=5
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=5
+
+Root node: The 'Home' content tree node. This is the command most users will very likely want to run to regenerate node subtree image aliases for class attribute identifier and specific image alias.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny --attributes=image,profile,cateogry
+
+Root node: The 'Home' content tree node. This is the command most users will very likely want to run to regenerate node subtree image aliases specific image alias.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny
 
 
 1.2 The removal command line script options --remove, --node-id and --subtree-children removes all image aliases of images used throughout the entire content tree starting with the node-id provided
 
 Command line usage which removes image aliases of the object which the node-id passed is based on and all node objects in the content tree with a parent-id of the node-id passed. Default depth is 5 levels deep (fyi)
 
-Root node: The 'Home' content tree node. This is the command most users will very likely want to run first when using this extension for the first time.
+Root node: The 'Home' content tree node. This is the command most users will very likely want to run to remove all image aliases when using this extension for the first time.
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --subtree-children --node-id=2
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=2
 
-Root node: The 'Media' content tree node. Note this will normally generate image aliases as even the default installation provides / stores image content here for reuse site wide.
+Root node: The 'Media' content tree node. Note this will normally remove image aliases as even the default installation provides / stores image content here for reuse site wide.
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --subtree-children --node-id=43
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=43
 
-Root node: The 'Users' content tree node. Note that this may not generate aliases if your using a default installation of eZ or your users do not use this feature directly.
+Root node: The 'Users' content tree node. Note that this may not remove aliases if your using a default installation of eZ or your users do not use this feature directly.
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --subtree-children --node-id=5
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=5
+
+Root node: The 'Home' content tree node. This is the command most users will very likely want to run to remove node subtree image aliases for class attribute identifier and specific image alias.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny --attributes=image,profile,cateogry
+
+Root node: The 'Home' content tree node. This is the command most users will very likely want to run to remove node subtree image aliases specific image alias.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny
 
 
-2.1 The generation command line script option --generate all image aliases of images used throughout the database without regard to the content tree location(s).
+2.1 The generation command line script option --create all image aliases of images used throughout the database without regard to the content tree location(s).
 
-This script will generate all possible image alias variation image files each time it is executed without the --dry option. Note: --dry option is not supported with --generate.
+This script will create all possible image alias variation image files each time it is executed without the --dry option. Note: --dry option is not supported with --create without --troubleshoot-level=2 or greater.
 
-Simply run the provided command line script to generate all image alias variations in the system.
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_user --create --subtree-children --node-id=190 --related-siteaccesses --regenerate --force --dry --troubleshoot-level=3
+
+
+Simply run the provided command line script to create all image alias variations in the system.
 
 cd /path/to/ezpublish/;
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create
 
 
 Examples alternatives:
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate --force
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create --regenerate --force
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate --force --related-siteaccesses
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create --regenerate --force --related-siteaccesses
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create --regenerate --force --related-siteaccesses --script-verbose
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=2
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create --regenerate --force --related-siteaccesses --script-verbose --troubleshoot-level=2
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate --force --related-siteaccesses --script-verbose --troubleshoot-level=3
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create --regenerate --force --related-siteaccesses --script-verbose --troubleshoot-level=3
 
-./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --generate --force --related-siteaccesses --object-id=108 --script-verbose --troubleshoot-level=2
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --create --regenerate --force --related-siteaccesses --object-id=108 --script-verbose --troubleshoot-level=2
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny --attributes=image,profile,cateogry
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny --attributes=image,profile,cateogry --classes=article,category,news,blog-item
 
 
 2.1 The removal command line script option --remove will remove all image aliases of images used throughout the database without regard to the content tree location(s).
@@ -92,40 +117,136 @@ Examples alternatives:
 
 ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess ezwebin_site_user --remove --force --related-siteaccesses --object-id=108 --script-verbose --troubleshoot-level=2
 
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny --attributes=image,profile,cateogry
+
+./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --remove --force --subtree-children --node-id=2 --related-siteaccesses --aliases=large,small,tiny --attributes=image,profile,cateogry --classes=article,category,news,blog-item
+
 
 3. Command line usage which does nothing useful because image attributes are not used in child content tree node objects
 
-Try to generate image alias variations for nodes (and children) which don't use image attributes 
+Try to create image alias variations for nodes (and children) which don't use image attributes 
 
 Root node: The 'Design' content tree node
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --script-verbose --subtree-children --node-id=58
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --script-verbose --subtree-children --node-id=58
 
 Root node: The 'Setup' content tree node
 
- ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --generate --force --script-verbose --subtree-children --node-id=48
+ ./extension/bcimagealias/bin/php/bcimagealias.php --siteaccess=ezwebin_site_admin --create --regenerate --force --script-verbose --subtree-children --node-id=48
 
 
-4. Workflow event usage
+4. Admin siteaccess content structure menu and popup class menu options
+
+You can create, regenerate or remove content tree node image alias image variation image files using your admin siteaccess content structure and popup class menus.
+
+You don't even need to use a separate module view to use these features. These menu options are enabled by default for all admin siteaccesses (which use the admin design)
+
+Simply login to the admin siteaccess and use the content structure menu, click on a node and see the 'BC ImageAlias' sub menu, click the 'BC ImageAlias' sub menu.
+
+Then click on the action you wish to use.
+
+You will be redirected to the node you selected upon completion.
+
+If you get a role permission error you may have skipped the required role policy rule addition steps in doc/INSTALL
+
+
+5. Extension module view direct access usage examples
+
+You can create, regenerate or remove content tree node image alias image variation image files using the provided extension module views.
+
+5.1 Usage of bcimagealias module views 'create' and 'remove'
+
+Simply login to the admin siteaccess and then load the following urls directly via your browser url input bar or command line browser command.
+
+5.2 Module view parameter syntax
+
+Here is the module view url parameter variable conventions used (note parameter name):
+
+http://(host)/(index)/(siteaccess)/bcimagealias/create/(NodeID)
+
+5.3 Suggested required parameter: NodeID
+
+Only the (NodeID) parameter is a suggested required parameter, technically it is optional as without it, the content browse functionality will be called to allow the user to choose a node to create, regenerate and remove image aliases, the rest of the parameters are optional, though all are recommended.
+
+http://(host)/(index)/(siteaccess)/bcimagealias/create/(NodeID)/(Children)
+http://(host)/(index)/(siteaccess)/bcimagealias/create/(NodeID)/(Children)/(Regenerate)
+http://(host)/(index)/(siteaccess)/bcimagealias/create/(NodeID)/(Children)/(Regenerate)/(CurrentSiteaccess)
+
+5.4 Example usage of real module view urls (with parameters)
+
+Here are some real life example usage of the module views urls
+
+5.4.1 Regenerate image aliases by NodeID (Create subtree children, Current siteaccess) 
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true
+
+5.4.1 Regenerate image aliases by NodeID (Create subtree children, Current siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true/true
+
+5.4.1 Regenerate image aliases by NodeID (Create subtree children, Related siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true/false
+
+5.4.1 Create image aliases by NodeID (Current siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/false
+
+5.4.1 Create image aliases by NodeID (Create subtree children, Related siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/false/false
+
+5.4.1 Create image aliases by NodeID (Create subtree children, Current siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/false/true
+
+5.4.1 Create image aliases by NodeID (Do not create subtree children, Current siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/false
+
+5.4.1 Create image aliases by NodeID (Do not create subtree children, Current siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/false/true
+
+5.4.1 Create image aliases by NodeID (Do not create subtree children, Related siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/false/false
+
+5.4.1 Regenerate image aliases by NodeID (Do not create subtree children, Current siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/true/true
+
+5.4.1 Regenerate image aliases by NodeID (Do not create subtree children, Related siteaccess)
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/false/true/false
+
+You will be redirected to the node you selected upon completion.
+
+If you get a role permission error you may have skipped the required role policy rule addition steps in doc/FAQ #7 and doc/INSTALL
+
+
+6. Workflow event usage
 
 The generation workflow event
 
-Install the optional provided workflow event 'bcimagealiasgenerateobjectimagevariations' on the 'content, publish, before' trigger to enable content object image alias variations to be created each time a user publishes a content object.
+Install the optional provided workflow event 'bcimagealiascreateobjectimagevariations' on the 'content, publish, before' trigger to enable content object image alias variations to be created each time a user publishes a content object.
 
 Detailed directions on installing and configuring the workflow event and trigger configuration available in the above section '6. (optional) Workflow & Trigger Setup' of this INSTALL documentation.
 
 
-5. Cronjob part usage
+7. Cronjob part usage
 
-The generate cronjob part
+The create cronjob part
 
-This script will generate and remove all possible image alias variation image files each time it is executed.
+This script will create and remove all possible image alias variation image files each time it is executed.
 
-Simply run the provided command line runcronjobs script to generate all image alias variation image files in the system.
+Simply run the provided command line runcronjobs script to create all image alias variation image files in the system.
 
 cd /path/to/ezpublish/;
 
-php ./runcronjobs.php bcimagealiasgenerate
+php ./runcronjobs.php bcimagealiascreate
 
 or you can schedule removal of all image alias variation image files in the system.
 

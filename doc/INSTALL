@@ -7,8 +7,9 @@ Introduction
    ------------------------------------------------
 
    BC ImageAlias is a true eZ Publish extension that
-   provides commandline script, workflow event and class
-   methods to generate content object image alias variations.
+   provides commandline script, workflow event,
+   class methods and admin menu items to create, remove
+   and regenerate content object image alias variations.
 
    For more information about this extension please read the README file.
 
@@ -93,10 +94,21 @@ Installing BC ImageAlias extension
    ActiveAccessExtensions[]=bcimagealias
 
 
-4. There is no need to configure BC ImageAlias extension after activation
+4. Regenerate eZ Publish class autoloads
+
+You must regenerate autoloads for extension classes to be available via eZ Publish autoloads. This may mean running the following different commands.
+
+cd /path/to/ezpublish;
+
+php bin/php/ezpgenerateautoloads.php -v -e;
 
 
-5. Enable kernel overrides
+5. There is no need to configure BC ImageAlias extension after activation
+
+There are optional settings in settings/bcimagelalias.ini mostly workflow event specific. Create a settings override to customize these values.
+
+
+6. Enable kernel overrides
 
 5.1 Kernel Override Requirements
 
@@ -106,7 +118,7 @@ While BCImageAlias by default requires both kernel overrides to provide the feat
 
 Though based on your usage (like what version of eZ Publish are you using bcimagealias with?) of the bcimagealias extension (which parts of the extension do you require, which do you not require?) you may be able to avoid using the provided kernel overrides entirely.
 
-If you do not use the 'related-siteaccess' script parameter, workflow event ini setting, and php class property, then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' (modified) kernel class override be installed. The ezimagemanager class was modified to allow loading alias settings from multiple siteaccess ini override files and the default ini file directly to allow eZ Publish to create all the image aliases defined by default (in image.ini) and in several siteaccesses (related siteacesses setting in current siteaccess). Without this you additional functionality you can only generate image aliases defined within the current siteaccess. This may or may not be a concern to others depending on your specific use cases.
+If you do not use the 'related-siteaccess' script parameter, workflow event ini setting 'WorkflowEventCurrentSiteAccessAliasImageVariationCreation' set to 'disabled' (default, create override to change), and php 'BCImageAlias' class constructor / instance parameter $options['current-siteaccess'] set to false (not default), then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' (modified) kernel class override be installed. The ezimagemanager class was modified to allow loading alias settings from multiple siteaccess ini override files and the default ini file directly to allow eZ Publish to create all the image aliases defined by default (in image.ini) and in several siteaccesses (related siteacesses setting in current siteaccess). Without this you additional functionality you can only generate image aliases defined within the current siteaccess. This may or may not be a concern to others depending on your specific use cases.
 
 Users of eZ Publish version 'Community Build 2011.11' or greater do not require the kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' (unmodified) at all and likely never will.
 
@@ -132,19 +144,15 @@ Also there were issues with the changes introduce in 2011.09 build later resolve
    -- Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
 
-5.2 Remember to edit your config.php and enable this line:
+6.2 Remember to edit your config.php and enable this line:
 
 define( 'EZP_AUTOLOAD_ALLOW_KERNEL_OVERRIDE', true );
 
+6.3. Regenerate eZ Publish class kernel override autoloads
 
-6. Regenerate eZ Publish class autoloads
-
-You must regenerate autoloads for both extension and kernel overrides. This may mean running two different commands.
-
+You must regenerate autoloads for extension kernel override classes to be available via eZ Publish autloads. This may mean running the following different commands.
 
 cd /path/to/ezpublish;
-
-php bin/php/ezpgenerateautoloads.php -v -e;
 
 php bin/php/ezpgenerateautoloads.php -v -o;
 
@@ -162,10 +170,10 @@ php bin/php/ezpgenerateautoloads.php -v -o;
    C) Click on the group you have just created, and in the
       Workflows box click the "New Workflow" button.
 
-      1) Name the workflow "Generate Image Alias Variation Image Files".
+      1) Name the workflow "Create Image Alias Variation Image Files".
 
       3) You will now see an Event select dropdown.
-         1) Select "Event / BC ImageAlias - Generate Object Image Alias Variation Image Files"
+         1) Select "Event / BC ImageAlias - Create Object Image Alias Variation Image Files"
 
          2) Confirm you choice by clicking the "Add Event" button
             just to the right of the select dropdown.
@@ -195,6 +203,42 @@ php bin/php/ezpgenerateautoloads.php -v -o;
    add at least one image to image attribute, publish your content object.
 
    Next, Locate the newly created image alias variation image files in the related var directory.
+
+
+9. (optional) Admin siteaccess content structure and popup class menu module views
+
+You can create, regenerate or remove content tree node image alias image variation image files using your admin siteaccess content structure and popup class menus.
+
+You don't even need to use a separate module view to use these features. These menu options are enabled by default for all admin siteaccesses (which use the admin design)
+
+9.1 Installation configuration (setup
+
+To use the provided extension module views to create and remove image alias image variation images files in the admin siteaccess you must first add role policies to your 'Administrator' role.
+
+9.1.1 Simply login to the admin siteaccess and navigate to the 'User Accounts: Roles and policies' (Uri: '/role/list')
+
+9.1.2 Click on the edit icon for the 'Administrator' role.
+
+9.1.3 Click 'New policy', Select 'bcimagealias' in the 'Module' drop down menu. Then select 'create' in the 'Function' drop down menu. Then click grant full access.
+
+- Note: You can also use the 'Grant limited access' feature to limit access by content object class.
+
+9.1.4 (optional) Click 'New policy', Select 'bcimagealias' in the 'Module' drop down menu. Then select 'remove' in the 'Function' drop down menu. Then click grant full access.
+
+- Note: You can also use the 'Grant limited access' feature to limit access by content object class.
+
+9.1.5 Click 'Save'.
+
+
+9.2 Then simply click the 'Content Structure' menu in the admin siteaccess and use the content structure menu
+
+9.2.1 Click on a node and see the 'BC ImageAlias' sub menu, click the 'BC ImageAlias' sub menu.
+
+9.2.2 Then click on the action you wish to use.
+
+9.2.3 You will be redirected to the node you selected upon completion.
+
+9.2.4 If you get a role permission error you may have skipped the required role policy rule addition steps above correct or you may need to clear caches first.
 
 
 Usage

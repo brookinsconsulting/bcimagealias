@@ -11,7 +11,7 @@
 // General cronjob part options
 $phpBin = '/usr/bin/php';
 $generatorWorkerScript = 'extension/bcimagealias/bin/php/bcimagealias.php';
-$options = '--remove';
+$options = '--remove --force';
 $result = false;
 
 passthru( "$phpBin ./$generatorWorkerScript $options;", $result );

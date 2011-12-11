@@ -3,12 +3,25 @@ CHANGELOG 0.0.23
 - Added: Changelog for 0.0.23 in doc/changelogs/CHANGELOG-0.0.23
 - Added: Added doc/USAGE
 - Added: Added bcimagealiasremove cronjob part, related settings and usage documentation
+- Added: Added extension admininterface contextmenu and submenu template settings overrides 
+- Added: Added Design 'standard' template overrides of content structure and class popup menus
+- Added: Added Script 'bcimagealias' optional parameters '--classes', '--attributes' and '--aliases'
+- Added: Added Module 'bcimagealias' with module views 'create' and 'remove'
+- Added: Added Module 'bcimagealias' module view function role policies 'create' and 'remove' to provide module view security restrictions by default
+- Added: Added extension translations for most template strings in 'untranslated', 'eng-US' and 'eng-GB' translation files
 - Updated: Changed extension version to 0.0.23
 - Updated: Minor extension.xml sources url typo change
 - Updated: Moved usage documentation out into it's own file doc/USAGE
-- Updated: Added --node-id and --subtree-children parameters to bcimagealias.php script. Added support to generate/remove all/one content tree node image aliases
-- Updated: Added BCImageAlias class support to generate content tree node image aliases
-- Updated: Added workflow event and related settings to generate content tree node (and child node subtree) image aliases
+- Updated: Added --node-id and --subtree-children parameters to bcimagealias.php script. Added support to create/remove all/one content tree node image aliases
+- Updated: Added BCImageAlias class support to create content tree node image aliases
+- Updated: Added workflow event and related settings to create content tree node (and child node subtree) image aliases
 - Updated: Renamed BCImageAlias methods 'removeAllAliasesByAttribute' to 'removeByAttribute' and 'removeAllAliases' to 'removeByAttributes' for clarity and consistency
+- Updated: Renamed bcimagealias script parameters 'generate' to 'create' and 'force' to 'regenerate' for clarity and consistency
+- Updated: Expanded parameter support for bcimagealias script 'bccreateimagealiases' and 'bcremoveimagealiases' for clarity and consistency
+- Updated: Added class BCImageAlias create and remove method optional parameters 'classes', 'attributes' and 'aliases'
+- Updated: Renamed bcimagealias class parameter 'ExecutionOptions['troubleshootLevel']' to 'ExecutionOptions['verboseLevel']' for clarity and consistency
+- Updated: Renamed bcimagealias script 'bcgenerateimagealiases' to 'bccreateimagealiases' for clarity and consistency
+- Removed: Renamed bcimagealias workflow event 'bcimagealiasgenerateobjectimagevariations' to 'bcimagealiascreateobjectimagevariations'
+- Removed: Renamed bcimagealias workflow event settings in 'bcimagealias.ini.append.php' (please create a new settings override copy of this modified file)
 - Removed: Removed incomplete and deprecated workflow event
 

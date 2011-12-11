@@ -3,9 +3,9 @@
 [CronjobSettings]
 ExtensionDirectories[]=bcimagealias
 
-[CronjobPart-bcimagealiasgenerate]
+[CronjobPart-bcimagealiascreate]
 Scripts[]
-Scripts[]=bcimagealiasgenerate.php
+Scripts[]=bcimagealiascreate.php
 
 
 [CronjobPart-bcimagealiasremove]
