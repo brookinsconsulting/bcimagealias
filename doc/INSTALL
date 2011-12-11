@@ -241,6 +241,12 @@ To use the provided extension module views to create and remove image alias imag
 9.2.4 If you get a role permission error you may have skipped the required role policy rule addition steps above correct or you may need to clear caches first.
 
 
+Features
+============
+
+The complete extension features documentation is included in the file doc/FEATURES.
+
+
 Usage
 ==============================
 

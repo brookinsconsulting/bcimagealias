@@ -226,6 +226,36 @@ You will be redirected to the node you selected upon completion.
 
 If you get a role permission error you may have skipped the required role policy rule addition steps in doc/FAQ #7 and doc/INSTALL
 
+5.5 Use of eZContentBrowse::browse functionality
+
+The BC Image Alias extension for eZ Publish uses the eZContentBrowse::browse functionality of eZ Publish!
+
+If you install, configure and use the admin module view 'create' or 'remove' which provide use for the eZContentBrowse::browse feature of eZ Publish.
+
+To use the feature simply call either of the module views specifying the NodeID parameter as false.
+
+Which is a really cool idea if you think about it.
+
+Wouldn't it be cool if more module view's allowed you to pass a module view parameter value of false to simply display a node selection form using eZContentBrowse::browse which then performed an action using / based on the NodeID (selection, more than one are supported!) parameter returned by eZContentBrowse::browse to the module view used.
+
+No more need to 'lookup' a NodeID before using BCImageAlias module views, just select the Nodes you want to process and submit :)
+
+You can see all the supported usage examples of how to use these module views by reviewing the doc/USAGE documentation.
+
+Here is the brief usage example syntax summary:
+
+http://(host)/(index)/(siteaccess)/bcimagealias/create/(NodeID)/(Children)/(Regenerate)/(CurrentSiteaccess)
+http://(host)/(index)/(siteaccess)/bcimagealias/remove/(NodeID)/(Children)/(Regenerate)/(CurrentSiteaccess)
+
+Here are just a few of the supported usage examples available:
+
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/false
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/false/true/false/true
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true/false
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/remove/false
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/remove/false/true/false/true
+http://localhost/index.php/ezwebin_site_admin/bcimagealias/remove/190/true/true/false
+
 
 6. Workflow event usage
 

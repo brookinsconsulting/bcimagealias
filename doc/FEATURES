@@ -1,0 +1,61 @@
+BC Image Alias extension FEATURES
+
+1) BC Image Alias extension Features
+
+The bcimagealias extension provides the following features and supported apis
+
+   - BCImageAlias eZ Publish extension PHP Class, Creates, Regenerates,
+     Removes image alias image variation image files for eZ Publish
+   -- See: classes/
+
+   - bcimagealias eZ Publish extension PHP Scripts, Creates, Regenerates,
+     Removes image alias image variation image files for eZ Publish
+   -- See: bin/php/
+
+   - bcimagealias eZ Publish extension PHP Cronjob parts, Creates,
+     Removes image alias image variation image files for eZ Publish
+   -- See: cronjobs/
+
+   - bcimagealias eZ Publish extension PHP Module views, Creates, Regenerates,
+     Removes image alias image variation image files for eZ Publish
+   -- See: modules/bcimagealias/
+
+   - bcimagealias eZ Publish extension PHP workflow event, Creates, Regenerates
+     image alias image variation image files for eZ Publish
+   -- See: eventtypes/
+
+   - bcimagealias eZ Publish extension PHP kernel class override for eZ Publish
+   -- See: kernel/
+
+   - bcimagealias eZ Publish extension PHP lib class override for eZ Publish
+   -- See: lib/
+
+   - bcimagealias eZ Publish extension design override 'standard' for eZ Publish
+   -- See: design/standard/
+
+   - bcimagealias eZ Publish extension design override templates for content structure and popup class menus for eZ Publish admin siteaccess
+   -- See: design/standard/templates/
+
+   - bcimagealias eZ Publish extension translations for 'untranslated', 'eng-GB' and 'eng-US' in eZ Publish
+   -- See: translations/
+
+
+2) BC Image Alias extension eZ Publish api feature usage
+
+The bcimagealias extension makes use of the following eZ Publish features and supported apis
+
+   - eZ Publish extension
+   - eZ Publish extension classes
+   - eZ Publish extension bin/php scripts
+   - eZ Publish extension settings overrides
+   - eZ Publish extension design overrides
+   - eZ Publish extension design template overrides
+   - eZ Publish extension module views
+   - eZ Publish extension workflow event
+   - eZ Publish extension cronjobs
+   - eZ Publish extension kernel class overrides
+   - eZ Publish extension lib class overrides
+   - eZ Publish extension extension.xml
+   - eZ Publish extension ezinfo.php
+   - eZ Publish extension translations
+
