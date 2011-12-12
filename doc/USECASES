@@ -40,3 +40,6 @@ BC Image Alias extension USECASES
 
    We suggest reviewing the bcimagealias/remove.php PHP eZ Publish module view (which provides access to features of BCImageAlias PHP Class)
 
+8) One time only image attribute image alias image variation image creation or removal
+
+   If you are only using the features provided by the extension one time. Feel free to disable or remove the extension as it is not required by default.
