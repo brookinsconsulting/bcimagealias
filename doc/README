@@ -1,9 +1,9 @@
-BC ImageAlias extension README
+BC Image Alias extension README
 
-What is the BC ImageAlias extension?
+What is the BC Image Alias extension?
 ================================
 
-BC ImageAlias is a true eZ Publish extension
+BC Image Alias is a true eZ Publish extension
 that provides commandline script, workflow event,
 cronjob parts, class methods, module views and
 admin siteaccess content structure menu items to
@@ -11,10 +11,10 @@ create, remove and regenerate content object
 image alias variations.
 
 
-BC ImageAlias version
+BC Image Alias version
 =======================
 
-The current version of BC ImageAlias is 0.0.23
+The current version of BC Image Alias is 0.0.23
 Last Major update: December 11, 2011
 
 You can find details about changes for this
@@ -34,7 +34,7 @@ For more information or questions please contact license@brookinsconsulting.com
 Requirements
 ============
 
-The following requirements exists for using BC ImageAlias extension:
+The following requirements exists for using BC Image Alias extension:
 
 o  eZ Publish version:
 
@@ -48,7 +48,7 @@ o  PHP version:
 Installation
 ============
 
-Details on installing BC ImageAlias located in the file doc/INSTALL.
+Details on installing BC Image Alias located in the file doc/INSTALL.
 
 
 Features

@@ -1,5 +1,5 @@
 BC Image Alias TODO
-=================================================
+===================
 
 There are still quite a lot of features we could
 add to BC Image Alias.
@@ -15,8 +15,12 @@ please contact info@brookinsconsulting.com
 
 Features for consideration:
 
-- Regenerating specific image attribute and specific image alias's image variation image files directly (script, admin-submenu, php class)
+- Regenerating specific image attribute and specific image alias's
+image variation image files directly (script, admin-submenu, php class)
+
 - Different debug options
+
 - Logging options
+
 - Any other changes not mentioned here 
 

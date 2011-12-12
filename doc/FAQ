@@ -1,4 +1,4 @@
-FAQ
+BC Image Alias extension FAQ
 
 1) Custom image datatypes are supported through the bcimagealias.ini settings block BCImageAliasSettings setting array DataTypeStringList containing an array of dataType string (identifiers)
 
@@ -19,9 +19,9 @@ The 94 original image alias image variation image files stored within eZ Publish
 
 After generating all possible 1316 image alias variation image files for the default siteaccess the same directory grows to over 18 MB.
 
-That reprents a 3.6 times larger amount of disk space consumed by the created image alias variations
+That represents a 3.6 times larger amount of disk space consumed by the created image alias variations
 
-Here is a command line command that uses only base system tools to calculate current image alias variation image file disk useage
+Here is a command line command that uses only base system tools to calculate current image alias variation image file disk usage
 
 Command: du -cm var/ezwebin_site/storage/images/|grep total
 
@@ -30,7 +30,7 @@ Output: 5	total
 
 3) Performance
 
-The runtime performance of this extensions provided scripts and workflows depends greatly on the number of image datatypes used, the number of images in content objects, the number of image aliases in settings and the system load of the server durring the image alias variation image file generation.
+The runtime performance of this extensions provided scripts and workflows depends greatly on the number of image datatypes used, the number of images in content objects, the number of image aliases in settings and the system load of the server during the image alias variation image file generation.
 
 The bcimagealias.php --generate script takes just under 55 seconds (timed) to generate all default image alias variation image files within the eZ Publish var/ezwebin_site/storage/images within the 2011.09 build.
 
@@ -52,11 +52,11 @@ While BCImageAlias by default requires both kernel overrides to provide the feat
 
 Though based on your usage (like what version of eZ Publish are you using bcimagealias with?) of the bcimagealias extension (which parts of the extension do you require, which do you not require?) you may be able to avoid using the provided kernel overrides entirely.
 
-If you do not use the 'related-siteaccess' script parameter, workflow event ini setting 'WorkflowEventCurrentSiteAccessAliasImageVariationCreation' set to 'disabled' (default, create override to change), and php 'BCImageAlias' class constructor / instance parameter $options['current-siteaccess'] set to false (not default), then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' (modified) kernel class override be installed. The ezimagemanager class was modified to allow loading alias settings from multiple siteaccess ini override files and the default ini file directly to allow eZ Publish to create all the image aliases defined by default (in image.ini) and in several siteaccesses (related siteacesses setting in current siteaccess). Without this you additional functionality you can only generate image aliases defined within the current siteaccess. This may or may not be a concern to others depending on your specific use cases.
+If you do not use the 'related-siteaccess' script parameter, workflow event ini setting 'WorkflowEventCurrentSiteAccessAliasImageVariationCreation' set to 'disabled' (default, create override to change), and PHP 'BCImageAlias' class constructor / instance parameter $options['current-siteaccess'] set to false (not default), then you will not require the 'extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php' (modified) kernel class override be installed. The ezimagemanager class was modified to allow loading alias settings from multiple siteaccess ini override files and the default ini file directly to allow eZ Publish to create all the image aliases defined by default (in image.ini) and in several siteaccesses (related siteacesses setting in current siteaccess). Without this you additional functionality you can only generate image aliases defined within the current siteaccess. This may or may not be a concern to others depending on your specific use cases.
 
 Users of eZ Publish version 'Community Build 2011.11' or greater do not require the kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' (unmodified) at all and likely never will.
 
-The kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' was introduced into the extension in the aim of providing a convenient alternative to upgrading your entire eZ Publish 4.x installation to the 2011.11 build when all you need is one php class file to accomplish the task at hand, remove image aliases or generate them. This override if unused may be removed from the extension in the future.
+The kernel override 'extension/bcimagealias/kernel/classes/datatypes/ezimage/ezimagealiashandler.php' was introduced into the extension in the aim of providing a convenient alternative to upgrading your entire eZ Publish 4.x installation to the 2011.11 build when all you need is one PHP class file to accomplish the task at hand, remove image aliases or generate them. This override if unused may be removed from the extension in the future.
 
 Also there were issues with the changes introduce in 2011.09 build later resolved in the 2011.11 build. Users of eZ Publish Community Build 2011.09, 2011.10 (or any version before) should likely use our provided kernel override as the extension is designed to use this version specifically for most use cases (our unmodified copies come from the 2011.11 build sources in which the previous issues are correctly resolved). After you upgrade to or beyond eZ Publish Community build 2011.11 you can remove this kernel override.
 
@@ -146,3 +146,38 @@ http://localhost/index.php/ezwebin_site_admin/bcimagealias/create/190/true/true/
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/remove/false
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/remove/false/true/false/true
 http://localhost/index.php/ezwebin_site_admin/bcimagealias/remove/190/true/true/false
+
+10. Backporting bcimagealias to eZ Publish 3.x / PHP 4.x
+
+Lets be clear. This is not a goal of this project.
+Nor is this a recommended solution to any compatibility concern.
+
+Still, by the very design of the bcimagealias extension's solutions
+it happens to be very possible to backport the bulk of the contents
+of the bcimagealias extension to work within eZ Publish 3.x / PHP 4.x
+
+A warning first, as backporting the extension is very possible this
+could require kernel hacks as kernel overrides were not available
+until after eZ Publish 4.x
+
+Issues worth mentioning
+
+- Extension PHP code is written in PHP5 Syntax. This would need to be converted to PHP4
+
+- Extension component PHP files have no PHP includes, requires, etc as they were
+designed for use in eZ Publish 4.x which provides these features automatically via the autoload system.
+
+- BCImageAlias is mostly a static PHP class which uses the core eZ Publish API
+(Which changes very infrequently or substantially)
+
+- Extension scripts may need specific changes to run in eZ Publish 3.x / PHP4 + includes
+
+- Extension cronjobs would need very little changes to eZ Publish 3.x / PHP4 Syntax + includes
+
+- Extension workflow event would need to be backported to eZ Publish 3.x / PHP4 Syntax + includes
+
+- Extension module views would need very little changes to eZ Publish 3.x / PHP4 Syntax + includes
+
+- Extension functionality depends on kernel and lib PHP classes with greater functionality than is provided by default aka kernel hacks / patched kernel class files
+
+Backport with caution and care

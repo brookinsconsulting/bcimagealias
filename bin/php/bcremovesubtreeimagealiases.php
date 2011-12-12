@@ -58,7 +58,7 @@ $objectID = isset( $options['object-id'] ) ? $options['object-id'] : false;
 $attributes = isset( $options['attributes'] ) ? explode( ',', $options['attributes'] ) : false;
 $imageAliases = isset( $options['aliases'] ) ? explode( ',', $options['aliases'] ) : false;
 $nodeID = isset( $options['node-id'] ) ? $options['node-id'] : false;
-$subtreeChildren = isset( $options['subtree-children'] ) ? $options['subtree-children'] : false;
+$subtreeChildren = ( isset( $options['subtree-children'] ) && $options['subtree-children'] != 'true' ) ? $options['subtree-children'] : true;
 $classes = isset( $options['classes'] ) ? explode( ',', $options['classes'] ) : false;
 
 // Script php and script worker parameters

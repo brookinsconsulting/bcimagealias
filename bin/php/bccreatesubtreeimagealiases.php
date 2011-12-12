@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /**
- * File containing the bcimagealias image alias image variation file remover
+ * File containing the bcimagealias image alias image variation creator
  *
  * @copyright Copyright (C) 1999 - 2011 Brookins Consulting. All rights reserved.
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt GNU GPL v2 (or later)
@@ -9,15 +9,21 @@
  * @package bcimagealias
  */
 
+// Add a starting timing point tracking script execution time
+$srcStartTime = microtime();
+
 // Load existing class autoloads
 require 'autoload.php';
+
+// Disable php time limit to prevent script execution time limit errors
+set_time_limit( 0 );
 
 // Load cli and script environment
 $cli = eZCLI::instance();
 $script = eZScript::instance( array( 'description' =>
-                                     'eZ Publish content object attribute image alias variation file remover. ' .
+                                     'eZ Publish content object attribute image alias variation creator. ' .
                                      'This script makes sure that content object attribute image' .
-                                     ' alias variations are removed from the filesystem.',
+                                     ' alias variations are created before they are requested by users.',
                                      'extended-description' => '1. fetch ezcontentclass having an ezimage attribute, ' .
                                                                '2. fetch objects of these classes, ' .
                                                                '3. purge image alias for all version',
@@ -58,7 +64,7 @@ $objectID = isset( $options['object-id'] ) ? $options['object-id'] : false;
 $attributes = isset( $options['attributes'] ) ? explode( ',', $options['attributes'] ) : false;
 $imageAliases = isset( $options['aliases'] ) ? explode( ',', $options['aliases'] ) : false;
 $nodeID = isset( $options['node-id'] ) ? $options['node-id'] : false;
-$subtreeChildren = isset( $options['subtree-children'] ) ? $options['subtree-children'] : false;
+$subtreeChildren = ( isset( $options['subtree-children'] ) && $options['subtree-children'] != 'true' ) ? $options['subtree-children'] : true;
 $classes = isset( $options['classes'] ) ? explode( ',', $options['classes'] ) : false;
 
 // Script php and script worker parameters
@@ -78,7 +84,7 @@ $options = ( $dry ? ' --dry ' : '' )
            . ( $imageAliases ? '--aliases=' . $imageAliases : '' )
            . ( $attributes ? '--attributes=' . $attributes : '' )
            . ( $classes ? '--classes ' . $classes : '' )
-           . '--remove';
+           . '--create';
 
 // General script options
 $scriptExecutionOptions = array( 'verbose' => $verbose, 'dry' => $dry );
@@ -89,7 +95,7 @@ $script->startup();
 
 // Run command and capture result
 $result = false;
-passthru( "$phpBin ./$removalWorkerScript $options;", $result );
+passthru( "$phpBin ./$generatorWorkerScript $options;", $result );
 
 // Print command results to screen
 print_r( $result );

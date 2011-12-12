@@ -23,7 +23,7 @@ class BCImageAliasCreateObjectImageVariationsType extends eZWorkflowEventType
         /**
          * Define workflow event type. This assigns the name of the workflow event within the eZ Publish administration module views
          */
-        $this->eZWorkflowEventType( self::WORKFLOW_TYPE_STRING, "BC ImageAlias - Create Object Image Alias Variation Image Files" );
+        $this->eZWorkflowEventType( self::WORKFLOW_TYPE_STRING, "BC Image Alias - Create Object Image Alias Variation Image Files" );
 
         /**
          * Define trigger type. This workflow event requires the following to 'content, after, publish'

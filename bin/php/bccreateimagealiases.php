@@ -34,7 +34,7 @@ $script = eZScript::instance( array( 'description' =>
 // Fetch default script options
 $options = $script->getOptions( '[force;][dry;][regenerate;][php-bin:][related-siteaccesses;][object-id;][classes;][attributes;][aliases;][node-id;][subtree-children;][script-verbose-level;]',
                                 '[name]', array( 'force' => 'Force disables delayed startup. Example: ' . "'--force'" . ' is an optional parameter which defaults to false',
-                                'regenerate' => 'Regenerate forces creation or removal. Recreates existing image aliases regardless if they already exist. Example: ' . "'--regenerate'" . ' is an optional parameter which defaults to false',
+                                                 'regenerate' => 'Regenerate forces creation or removal. Recreates existing image aliases regardless if they already exist. Example: ' . "'--regenerate'" . ' is an optional parameter which defaults to false',
                                                  'dry' => 'Use only with ' . "'--remove'" . ' parameter to make no system changes. Simulate the removal of content object attribute image datatype image alias image variation image files from system. Example: ' . "'--dry'" . ' is an optional parameter which defaults to false',
                                                  'create' => 'Generate content object attribute image datatype image alias image variation image files. Either ' . "'--create' or '--remove'" . ' are required parameters',
                                                  'remove' => 'Remove existing content object attribute image datatype image alias image variation image files from system. Either ' . "'--create' or '--remove'" . ' are required parameters',
