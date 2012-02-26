@@ -48,7 +48,7 @@ class BCImageAliasCreateObjectImageVariationsType extends eZWorkflowEventType
          */
         $workflowEventRegenerateCreation = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventRegenerateAliasImageVariations' ) == 'enabled' ? true : false;
         $workflowEventTroubleshootCreation = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventTroubleshootAliasImageVariationCreation' ) == 'enabled' ? true : false;
-        $workflowEventTroubleshootCreation = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventTroubleshootAliasImageVariationCreationLevel' ) != '1' ? eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventTroubleshootAliasImageVariationCreationLevel' ) : 1;
+        $workflowEventVerboseCreationLevel = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventTroubleshootAliasImageVariationCreationLevel' ) != '1' ? eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventTroubleshootAliasImageVariationCreationLevel' ) : 1;
         $workflowEventCurrentSiteAccessCreation = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventCurrentSiteAccessAliasImageVariationCreation' ) == 'enabled' ? true : false;
         $workflowEventSubtreeImageAliasCreation = eZINI::instance( 'bcimagealias.ini' )->variable( 'BCImageAliasSettings', 'WorkflowEventSubtreeImageAliasImageVariationCreation' ) == 'enabled' ? true : false;
 
