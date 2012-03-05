@@ -15,20 +15,43 @@ Introduction
 
    For more information about this extension please read the README file.
 
-1. License
-   -------
+1. Copyright
+   ---------
 
-   BC Image Alias is licensed under the GNU General Public License.
+   BC Image Alias is copyright 1999-2012 Brookins consulting and eZ Systems AS
 
-   The GNU GPL gives you the right to use, modify and redistribute
-   BC Image Alias under certain conditions. The GNU GPL license
-   is distributed with the software, see the file doc/LICENSE.
-   It is also available at http://www.gnu.org/licenses/gpl.txt
+   See: doc/COPYRIGHT for more information on the terms of the copyright and license
 
-   Using BC Image Alias under the terms of the GNU GPL is free (as in freedom).
+1.1. License
+     -------
 
-   For more information or questions please contact
-   license@brookinsconsulting.com
+     BC Image Alias is licensed under the GNU General Public License.
+    
+     The complete license agreement is included in the doc/LICENSE file.
+    
+     BC Image Alias is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 2 of the License, or
+     (at your option) any later version.
+    
+     BC Image Alias is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+    
+     The GNU GPL gives you the right to use, modify and redistribute
+     BC Image Alias under certain conditions. The GNU GPL license
+     is distributed with the software, see the file doc/LICENSE.
+    
+     It is also available at http://www.gnu.org/licenses/gpl.txt
+    
+     You should have received a copy of the GNU General Public License
+     along with BC Image Alias in doc/LICENSE.  If not, see http://www.gnu.org/licenses/.
+    
+     Using BC Image Alias under the terms of the GNU GPL is free (as in freedom).
+    
+     For more information or questions please contact
+     license@brookinsconsulting.com
 
 2. Requirements
    ------------
@@ -80,10 +103,10 @@ Installing BC Image Alias extension
    necessary is depends on the file you downloaded.
 
    [tar.gz]
-   tar -zxvf bcimagealias-0_0_23.tar.gz
+   tar -zxvf bcimagealias-0_0_24.tar.gz
 
    [zip]
-   unzip bcimagealias-0_0_23.tar.zip
+   unzip bcimagealias-0_0_24.tar.zip
 
 
 3. (Optional) Git clone the latest GitHub brookinsconsulting bcimagealias extension sources into the extension directory
@@ -98,6 +121,32 @@ mkdir bcimagealias;
 cd bcimagealias;
 
 git clone git@github.com:brookinsconsulting/bcimagealias.git . ;
+
+sudo chmod -R 777 ../bcimagealias;
+
+
+3.1. (Optional) Git download the latest GitHub brookinsconsulting bcimagealias extension sources into the extension directory
+     ===========================
+
+     You can optionaly fetch the latest extension source code from GitHub brookinsconsulting bcimagealias repository into the extension directory
+
+cd /path/to/ezpublish;
+cd extension;
+
+mkdir bcimagealias;
+cd bcimagealias;
+
+wget https://github.com/brookinsconsulting/bcimagealias/tarball/master;
+
+or
+
+wget https://github.com/brookinsconsulting/bcimagealias/zipball/master
+
+tar -zxf brookinsconsulting-bcimagealias-d1d1411.tar.gz;
+
+or 
+
+unzip brookinsconsulting-bcimagealias-d1d1411.tar.gz;
 
 sudo chmod -R 777 ../bcimagealias;
 

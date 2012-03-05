@@ -14,21 +14,50 @@ image alias variations.
 BC Image Alias version
 =======================
 
-The current version of BC Image Alias is 0.0.23
-Last Major update: December 11, 2011
+The current version of BC Image Alias is 0.0.24
+Last Major update: March 04, 2012
 
 You can find details about changes for this
-version in doc/changelogs/CHANGELOG-0.0.23
+version in doc/changelogs/CHANGELOG-0.0.24
 
+
+Copyright
+=========
+
+BC Image Alias is copyright 1999-2012 Brookins consulting and eZ Systems AS
+
+See: doc/COPYRIGHT for more information on the terms of the copyright and license
 
 License
 =======
 
-This software is licensed under the GNU General Public License.
+BC Image Alias is licensed under the GNU General Public License.
 
 The complete license agreement is included in the doc/LICENSE file.
 
-For more information or questions please contact license@brookinsconsulting.com
+BC Image Alias is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+BC Image Alias is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The GNU GPL gives you the right to use, modify and redistribute
+BC Image Alias under certain conditions. The GNU GPL license
+is distributed with the software, see the file doc/LICENSE.
+
+It is also available at http://www.gnu.org/licenses/gpl.txt
+
+You should have received a copy of the GNU General Public License
+along with BC Image Alias in doc/LICENSE.  If not, see http://www.gnu.org/licenses/.
+
+Using BC Image Alias under the terms of the GNU GPL is free (as in freedom).
+
+For more information or questions please contact
+license@brookinsconsulting.com
 
 
 Requirements

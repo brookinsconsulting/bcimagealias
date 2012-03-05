@@ -1,0 +1,144 @@
+BC Image Alias extension GETTINGSTARTED
+
+bcimagealias is a complete upload, enable and run solution. Little configuration is needed, out of the box it is ready to use. This is an extension based solution to generate all content object attribute ezimage datatype image alias variation image files before these files are requested by the users using the site.
+Status
+
+The BC Image Alias extension is now quite stable. We have released stable beta packages of the extension for all eZ Publish users to try at this time. http://projects.ez.no/bcimagealias#eztoc191204_0_4
+
+Report your comments and questions in the project forums. http://projects.ez.no/bcimagealias/forum/general
+
+Summary
+
+The BC Image Alais extension is a complete solution for those looking to create or remove eZ Publish content object image attribute 'image alias' image variation image files. BC Image Alias provides extensive documentation within the extension itself. https://github.com/brookinsconsulting/bcimagealias/tree/master/doc
+
+Tools
+
+bcimagealias provides a wide range of tools to help meet these related needs.
+
+- Easy to use content structure menu links to create, remove and regenerate image alias caches on demand.
+- Several command line scripts to generate or remove all image alias image variation image files in the system at any time. See: USAGE documentation for more complete examples. https://github.com/brookinsconsulting/bcimagealias/blob/master/doc/USAGE
+- A workflow event which generates all image aliases per content object node (and it's children) just after each object is published.
+- Two module views to create and remove node object image alias variations.
+- Two cronjob parts also provides command line script to generate and remove all image alias image variation image files in the system at any time, specifically in a scheduled crontab.
+- The provided BCImageAlias PHP class allows you to use the core PHP class which provides the extension functionality to meet your needs in custom PHP classes, workflow events, scripts, module views, and beyond!
+- Translations: untranslated, eng-GB and eng-US. Feel free to translate this extension in any language.
+
+Learn more about the features available in our features and use case documentation.
+
+https://github.com/brookinsconsulting/bcimagealias/blob/master/doc/FEATURES
+
+https://github.com/brookinsconsulting/bcimagealias/blob/master/doc/USECASES
+
+Downloads
+
+Download extension packages are regenerated at each major package release (check GitHub for the latest version first)
+
+bcimagealias.ezpkg, http://projects.ez.no/content/download/44546/196803/file/bcimagealias.ezpkg
+bcimagealias.tar.gz, http://projects.ez.no/content/download/43496/191551/file/bcimagealias.tar.gz
+bcimagealias.zip, http://projects.ez.no/content/download/43498/191557/file/bcimagealias.zip
+bcimagealias.tar.bz2, http://projects.ez.no/content/download/43497/191554/file/bcimagealias.tar.bz2
+bcimagealias.rar, http://projects.ez.no/content/download/44545/196800/file/bcimagealias.rar
+bcimagealias.7z, http://projects.ez.no/content/download/44544/196797/file/bcimagealias.7z
+
+Alternatively, you can also automatically download the latest github sources in tar.gz and zip format
+
+https://github.com/brookinsconsulting/bcimagealias/tarball/master
+
+https://github.com/brookinsconsulting/bcimagealias/zipball/master
+
+Source code
+
+The latest extension source code is always available on GitHub.
+
+https://github.com/brookinsconsulting/bcimagealias
+
+Installation
+
+Please read the README and INSTALL documentation first when getting started.
+
+The documentation is extensive, thorough and verbose. You should have no problem using the extension after reading the documentation and performing a few tests runs of the commands in the USAGE documentation in your preferred development environment.
+
+
+First Use - Validating script execution accuracy / performance 
+
+We suggest first reviewing the disk usage of the image variation directory for a new node which has not yet been viewed on the user siteaccess. This provides a baseline for future comparison after image alias creation.
+
+Next we suggest creating the image alias image variations (using bcimagealias.php script) for the one node mentioned previously. This will basically create the image alias variation images of a single content object.
+
+After running the create image alias command, review the disk usage of the image variation directory for your node, you should find the node's image aliases (image variation image files) created and available normally.
+
+Examples of how to us the bcimagealias.php script parameters
+
+The very best source of examples of how to use this extension are available in our USAGE documentation. Here are just a few of the many usages available ...
+
+Calling the script to create or remove all image alias image variation image files (Image Aliases) for all content tree content objects for the current siteaccess
+This example script command generates all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --create
+This example script command removes all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --remove
+Limitation: This script fetches all content object attributes of all content objects without limit (re: version), this may be a performance concern in some configurations.
+
+Calling the script to create or remove all image alias image variation image files (Image Aliases) of all content tree content objects for all of the current siteaccess's related siteaccesses
+This example script command generates all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --create --related-siteaccesses
+This example script command removes all image alias image variations for all siteaccesses. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --remove --related-siteaccesses
+Limitation: This script fetches all content object attributes of all content objects without limit (re: version), this may be a performance concern in some configurations.
+
+Calling the script to create or remove all image alias image variation image files (Image Aliases) for the related siteaccesses and the node content object and it's child nodes
+This example script command generates all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --create --node-id=2 --subtree-children --related-siteaccesses
+This example script command removes all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --remove --node-id=2 --subtree-children --related-siteaccesses
+Limitation: This script fetches the specified node and all subtree child nodes (and subsequent objects) without limit, this may be a performance concern in some configurations.
+
+Calling the script to create or remove all image alias image variation image files (Image Aliases) for the current siteaccess and one node content object
+This example script command generates all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --create --node-id=2
+This example script command removes all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --remove --node-id=2
+This script fetches all content object attributes of a single content object without limit, this should not be a performance concern in most configurations.
+
+Calling the script to create or remove all image alias image variation image files (Image Aliases) for the current siteaccess and one content object
+This example script command generates all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --create--object-id=108
+This example script command removes all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --remove --object-id=108
+This script fetches all content object attributes of a single content object without limit, this should not be a performance concern in most configurations.
+
+Calling the script to create or remove all image alias image variation image files (Image Aliases) for one content object and all of the current siteaccess's related siteaccesses image aliases
+This example script command generates all image alias image variations per siteaccess. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --create --object-id=108 --related-siteaccesses
+This example script command removes all image alias image variations for all siteaccesses. Here is an example of how to call the script.
+
+./extension/bcimagealias/bin/php/bcimagealias.php --remove --object-id=108 --related-siteaccesses
+This script fetches all content object attributes of a single content object without limit, this should not be a performance concern in most configurations.
+
+
+A word on design
+
+As a stand alone extension, bcimagealias will not negatively affect any other extension or core behavior. This extension builds upon expected system behavior and usage through strong usage of the powerful eZ Publish PHP Kernel API to reduce complexity and increase flexibility.
+
+Images alias variation image files created and stored with this extension are the same as found within default eZ Publish installations without it.
+
+
+Flexibility
+
+If after using the provided script to generate the alias image variation image files for your site you no longer need to do this again, there is no reason you can not disable and remove it. This in part helps ensure your not dependent on yet another extension, it's your choice on when and how you use it.
+
+	
+Reference
+
+This project started as an example published in an article on ezpedia.org in responce to requests for a solution to this need. http://ezpedia.org/solution/creating_image_alias_image_variations_in_php
+

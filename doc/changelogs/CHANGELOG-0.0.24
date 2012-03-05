@@ -1,0 +1,9 @@
+CHANGELOG 0.0.24
+
+- Added: Changelog for 0.0.24 in doc/changelogs/CHANGELOG-0.0.24
+- Added: doc/GETTINGSTARTED.odt containing the project home page content
+- Added: doc/GETTINGSTARTED.pdf containing the project home page content
+- Added: doc/GETTINGSTARTED containing the project home page text content
+- Updated: Revised copyright of individual PHP files for clarity
+- Updated: Revised copyright within documentation text files for clarity
+- Updated: Expanded latest download link(s) provided by GitHub within the doc/INSTALL documentation
