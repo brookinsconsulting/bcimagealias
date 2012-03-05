@@ -187,6 +187,23 @@ php bin/php/ezpgenerateautoloads.php -v -e;
 
    There are optional settings in settings/bcimagelalias.ini mostly workflow event specific. Create a settings override to customize these values.
 
+6.1. Configure optional setttings
+
+     One optional setting in settings/bcimagelalias.ini is the setting WorkflowEventCurrentSiteAccessAliasImageVariationCreation=disabled
+     With this setting you can choose to change it to 'enabled' to create all image alias image variations for current siteaccess only (if set to 'enabled'). Alternatively you can leave the setting 'disabled' to create all image alias image variations for all related siteaccesses of the current siteaccess (if set to 'disabled').
+     WorkflowEventCurrentSiteAccessAliasImageVariationCreation=disabled
+
+     From Example Default: settings/siteaccess/ezwebin_site_user/site.ini.append.php
+
+     [SiteAccessSettings]
+     ...
+     RelatedSiteAccessList[]
+     RelatedSiteAccessList[]=ezwebin_site_user
+     RelatedSiteAccessList[]=eng
+     RelatedSiteAccessList[]=ezwebin_site_admin
+     ...
+
+     If you set the above bcimagealias.ini setting described above to 'disabled' or use the default setting of 'disabled' and the kernel overrides are enabled and normally available then bcimagealias will generate the image alias image variation image files for all related siteaccesses as shown above for example.
 
 7. Enable kernel overrides
    ===========================

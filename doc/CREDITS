@@ -11,3 +11,4 @@ Based on eZ Publish (4.6.0) default PHP kernel classes distributed by eZ Systems
 
  - Kernel Override File: extension/bcimagealias/lib/ezimage/classes/ezimagemanager.php
 
+Based on module views from extension bcloremipsum, https://github.com/brookinsconsulting/bcloremipsum/blob/master/doc/CREDITS
